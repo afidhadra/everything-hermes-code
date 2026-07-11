@@ -62,6 +62,11 @@ analyze:
 	@bash scripts/commands/analyze.sh .
 	@echo ">>> Done"
 
+status:
+	@echo ">>> Deploy status..."
+	@python3 scripts/deploy.py --status
+	@echo ">>> Done"
+
 clean:
 	@echo ">>> Cleaning..."
 	@find . -name "__pycache__" -not -path "./.git/*" -type d -exec rm -rf {} + 2>/dev/null || true
