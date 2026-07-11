@@ -85,9 +85,20 @@ def fix_md040(content: str) -> str:
     """Fenced code blocks should have a language specified."""
     lines = content.split("\n")
     result = []
+    in_fence = False
     for line in lines:
-        if re.match(r"^```\s*$", line):
-            result.append("```text")
+        if re.match(r"^```", line):
+            if not in_fence:
+                # Opening fence without language
+                if re.match(r"^```\s*$", line):
+                    result.append("```text")
+                else:
+                    result.append(line)
+                in_fence = True
+            else:
+                # Closing fence - keep as-is
+                result.append(line)
+                in_fence = False
         else:
             result.append(line)
     return "\n".join(result)

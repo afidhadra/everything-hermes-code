@@ -1,0 +1,7 @@
+{
+  "sonarqube": {
+    "type": "stdio",
+    "command": "/home/afidhadra/.local/bin/sonarqube-mcp-wrapper.sh",
+    "timeout": 30000
+  }
+}

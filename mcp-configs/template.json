@@ -1,0 +1,24 @@
+{
+  "mcpServers": {
+    "sonarqube": {
+      "type": "stdio",
+      "command": "/home/afidhadra/.local/bin/sonarqube-mcp-wrapper.sh",
+      "timeout": 30000
+    },
+    "github": {
+      "type": "stdio",
+      "command": "/home/afidhadra/go/bin/github-mcp-server",
+      "args": ["stdio"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      },
+      "timeout": 30000
+    },
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"],
+      "timeout": 30000
+    }
+  }
+}
