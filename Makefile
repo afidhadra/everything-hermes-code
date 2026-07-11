@@ -26,15 +26,22 @@ help:
 	@echo ""
 	@echo "Usage: make [target]"
 	@echo ""
-	@echo "  lint      Fix markdown formatting"
-	@echo "  test      Run unit tests"
-	@echo "  hooks     Install git hooks"
-	@echo "  check     Check dependencies"
-	@echo "  analyze   Run SonarQube analysis"
-	@echo "  clean     Remove cache files"
-	@echo "  setup     Full setup (check + permissions + hooks)"
-	@echo "  help      Show this help"
+	@echo "  dashboard  Show unified status (docker + repos + health)"
+	@echo "  status     Deploy status (BE + FE)"
+	@echo "  repos      Multi-repo git status"
+	@echo "  docker     Docker health check"
+	@echo "  lint       Fix markdown formatting"
+	@echo "  test       Run unit tests"
+	@echo "  hooks      Install git hooks"
+	@echo "  check      Check dependencies"
+	@echo "  analyze    Run SonarQube analysis"
+	@echo "  clean      Remove cache files"
+	@echo "  setup      Full setup (check + permissions + hooks)"
+	@echo "  help       Show this help"
 	@echo ""
+
+dashboard:
+	@python3 scripts/ehc.py
 
 lint:
 	@echo ">>> Linting markdown..."
