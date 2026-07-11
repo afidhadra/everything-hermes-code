@@ -14,7 +14,7 @@ main (production)
 │   └── feature/dashboard
 ├── release/v1.2.0
 └── hotfix/critical-bug
-```text
+```
 
 ### GitHub Flow
 
@@ -23,7 +23,7 @@ main (production)
 ├── feature/user-auth
 ├── feature/payment
 └── fix/login-bug
-```text
+```
 
 ## Commit Messages
 
@@ -35,7 +35,7 @@ main (production)
 [optional body]
 
 [optional footer]
-```text
+```
 
 ### Types
 
@@ -69,7 +69,7 @@ Closes #123"
 
 git commit -m "update code"
 git commit -m "fix stuff"
-```text
+```
 
 ## Common Commands
 
@@ -92,7 +92,7 @@ git diff
 # View staged changes
 
 git diff --staged
-```text
+```
 
 ### Branching
 
@@ -117,7 +117,7 @@ git branch -d feature/user-auth
 # Force delete
 
 git branch -D feature/user-auth
-```text
+```
 
 ### Staging & Committing
 
@@ -146,7 +146,7 @@ git commit --amend
 # Interactive rebase
 
 git rebase -i HEAD~3
-```text
+```
 
 ### Remote Operations
 
@@ -171,7 +171,7 @@ git push -u origin feature/user-auth
 # Force push (dangerous!)
 
 git push --force-with-lease
-```text
+```
 
 ## Workflows
 
@@ -212,7 +212,7 @@ git merge feature/user-auth
 
 git branch -d feature/user-auth
 git push origin --delete feature/user-auth
-```text
+```
 
 ### Hotfix
 
@@ -247,7 +247,7 @@ git push origin --tags
 # 6. Delete hotfix branch
 
 git branch -d hotfix/critical-bug
-```text
+```
 
 ## Undoing Changes
 
@@ -266,7 +266,7 @@ git restore file.go
 # Discard all changes
 
 git checkout -- .
-```text
+```
 
 ### Staged Changes
 
@@ -279,7 +279,7 @@ git reset HEAD file.go
 # Or using restore
 
 git restore --staged file.go
-```text
+```
 
 ### Last Commit
 
@@ -296,7 +296,7 @@ git reset --hard HEAD~1
 # Amend last commit
 
 git commit --amend -m "new message"
-```text
+```
 
 ### Remote Changes
 
@@ -309,7 +309,7 @@ git revert <commit-hash>
 # Reset remote (dangerous!)
 
 git push --force-with-lease
-```text
+```
 
 ## Stashing
 
@@ -344,7 +344,7 @@ git stash drop stash@{0}
 # Clear all stashes
 
 git stash clear
-```text
+```
 
 ## Tags
 
@@ -363,7 +363,7 @@ git tag -a v1.0.0 -m "Release version 1.0.0"
 # Tag specific commit
 
 git tag -a v1.0.0 <commit-hash>
-```text
+```
 
 ### Managing Tags
 
@@ -388,7 +388,7 @@ git tag -d v1.0.0
 # Delete tag remotely
 
 git push origin --delete v1.0.0
-```text
+```
 
 ## Best Practices
 
@@ -402,7 +402,7 @@ git commit -m "feat: add user model"
 git commit -m "feat: add user repository"
 git commit -m "feat: add user service"
 git commit -m "feat: add user controller"
-```text
+```
 
 ### Write Clear Messages
 
@@ -415,7 +415,7 @@ git commit -m "fix: resolve null pointer in user validation"
 # Bad
 
 git commit -m "fix bug"
-```text
+```
 
 ### Keep History Clean
 
@@ -428,7 +428,7 @@ git rebase -i develop
 # Interactive rebase
 
 git rebase -i HEAD~5
-```text
+```
 
 ## Tools
 

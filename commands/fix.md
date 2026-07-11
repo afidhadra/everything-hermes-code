@@ -6,7 +6,7 @@ Automatically fix linting and formatting issues.
 
 ```text
 /fix [file-or-directory] [--dry-run]
-```text
+```
 
 ## Description
 
@@ -32,7 +32,7 @@ Runs auto-fixers for:
 # Preview changes without applying
 
 /fix --dry-run
-```text
+```
 
 ## Supported Languages
 
@@ -58,4 +58,4 @@ def fix(target, dry_run=False):
     else:
         apply_fixes(fixes)
         return verify_fixes(target)
-```text
+```

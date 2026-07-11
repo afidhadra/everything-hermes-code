@@ -6,7 +6,7 @@ Perform security vulnerability scan.
 
 ```text
 /security [file-or-directory] [--deep]
-```text
+```
 
 ## Description
 
@@ -37,7 +37,7 @@ Scans for:
 # Scan dependencies
 
 /security --deps
-```text
+```
 
 ## Security Checks
 
@@ -86,4 +86,4 @@ def security_scan(target, deep=False):
         findings.extend(scan_secrets(target))
     
     return generate_security_report(findings)
-```text
+```

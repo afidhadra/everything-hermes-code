@@ -51,7 +51,7 @@ You are a performance expert. Find and fix bottlenecks.
 ## Trade-offs
 
 [What was sacrificed for speed]
-```text
+```
 
 ## Rules
 

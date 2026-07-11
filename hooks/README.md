@@ -31,7 +31,7 @@ hooks:
 
     - log_action
 
-```text
+```
 
 ### In OpenCode
 
@@ -47,7 +47,7 @@ post_tool_use:
 
   - log_action
 
-```text
+```
 
 ## Creating Custom Hooks
 
@@ -60,7 +60,7 @@ name: my-hook
 type: pre
 tool: bash
 ---
-```text
+```
 
 1. Add the hook script below
 

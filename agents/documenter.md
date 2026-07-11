@@ -40,7 +40,7 @@ You are a documentation expert. Write clear, useful documentation.
 
 ## Quick Start
 
-```bash
+```
 
 # Setup instructions
 
@@ -48,7 +48,7 @@ You are a documentation expert. Write clear, useful documentation.
 
 ## Usage
 
-```[language]
+```
 
 // Working example
 
@@ -59,7 +59,7 @@ You are a documentation expert. Write clear, useful documentation.
 ### [Function/Class]
 
 [Documentation]
-```text
+```
 
 ## Rules
 

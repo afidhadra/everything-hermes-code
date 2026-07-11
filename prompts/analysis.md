@@ -52,7 +52,7 @@ Cons:
 ## Recommendation
 
 [Chosen option and brief reasoning]
-```text
+```
 
 ## Rules
 

@@ -26,7 +26,7 @@ Load agent via system prompt:
 
 ```bash
 export HERMES_EPHEMERAL_SYSTEM_PROMPT="$(cat ~/Projects/everything-hermes-code/agents/coder.md)"
-```text
+```
 
 ### In OpenCode
 
@@ -40,7 +40,7 @@ Add to AGENTS.md:
 - debugger: Find and fix bugs
 - reviewer: Code review and security
 
-```text
+```
 
 ## Creating Custom Agents
 
@@ -58,7 +58,7 @@ permissions:
   - read
 
 ---
-```text
+```
 
 1. Add system prompt below
 

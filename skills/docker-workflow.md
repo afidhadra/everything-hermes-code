@@ -24,7 +24,7 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 COPY --from=builder /app/main .
 CMD ["./main"]
-```text
+```
 
 ### Optimization Tips
 
@@ -49,7 +49,7 @@ node_modules
 .git
 *.md
 .env
-```text
+```
 
 ## Docker Compose
 
@@ -106,7 +106,7 @@ services:
 
 volumes:
   postgres_data:
-```text
+```
 
 ### Production Setup
 
@@ -149,7 +149,7 @@ services:
 
       - app
 
-```text
+```
 
 ## Common Commands
 
@@ -172,7 +172,7 @@ docker run -d -e DATABASE_URL=postgres://... myapp:latest
 # Run with volume mount
 
 docker run -d -v $(pwd)/data:/app/data myapp:latest
-```text
+```
 
 ### Management
 
@@ -205,7 +205,7 @@ docker rm myapp
 # Remove image
 
 docker rmi myapp:latest
-```text
+```
 
 ### Cleanup
 
@@ -226,7 +226,7 @@ docker volume prune
 # Remove everything unused
 
 docker system prune -a
-```text
+```
 
 ## Networking
 
@@ -245,7 +245,7 @@ docker run -d --network mynetwork --name db postgres:15-alpine
 
 # App can connect to db using hostname "db"
 
-```text
+```
 
 ### Port Mapping
 
@@ -262,7 +262,7 @@ docker run -d -p 8080:8080 -p 9090:9090 myapp:latest
 # Map UDP ports
 
 docker run -d -p 53:53/udp myapp:latest
-```text
+```
 
 ## Volumes
 
@@ -287,7 +287,7 @@ docker run --rm -v mydata:/data -v $(pwd):/backup alpine \
 
 docker run --rm -v mydata:/data -v $(pwd):/backup alpine \
   tar xzf /backup/backup.tar.gz -C /data
-```text
+```
 
 ### Bind Mounts
 
@@ -304,7 +304,7 @@ docker run -d -v $(pwd):/app:ro myapp:latest
 # Mount specific file
 
 docker run -d -v $(pwd)/config.json:/app/config.json myapp:latest
-```text
+```
 
 ## Security
 
@@ -328,7 +328,7 @@ docker run --cap-drop=ALL --cap-add=NET_BIND_SERVICE myapp:latest
 # Scan for vulnerabilities
 
 docker scan myapp:latest
-```text
+```
 
 ### Secrets Management
 
@@ -345,7 +345,7 @@ docker run --env-file .env myapp:latest
 # Never commit .env files
 
 echo ".env" >> .dockerignore
-```text
+```
 
 ## Troubleshooting
 
@@ -370,7 +370,7 @@ docker run -u $(id -u):$(id -g) myapp:latest
 
 docker system prune -a
 docker volume prune
-```text
+```
 
 ### Debugging
 
@@ -391,4 +391,4 @@ docker stats myapp
 # Inspect container
 
 docker inspect myapp
-```text
+```

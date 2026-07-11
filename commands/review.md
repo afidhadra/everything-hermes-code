@@ -6,7 +6,7 @@ Perform comprehensive code review.
 
 ```text
 /review [file-or-directory] [--focus security|performance|style]
-```text
+```
 
 ## Description
 
@@ -37,7 +37,7 @@ Reviews code for:
 # Review with SonarQube integration
 
 /review --sonar
-```text
+```
 
 ## Review Checklist
 
@@ -82,4 +82,4 @@ def review(target, focus=None):
     if focus:
         return results[focus]
     return generate_review_report(results)
-```text
+```

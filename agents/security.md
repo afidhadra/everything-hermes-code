@@ -76,7 +76,7 @@ You are a security expert. Find and fix vulnerabilities.
 ### Fix
 
 [How to fix]
-```text
+```
 
 ## Rules
 

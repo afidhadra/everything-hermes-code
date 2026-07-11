@@ -17,7 +17,7 @@ project/
 ├── api/            # API definitions
 ├── configs/        # Configuration files
 └── scripts/        # Build scripts
-```text
+```
 
 ## Code Style
 
@@ -32,7 +32,7 @@ if err != nil {
 
 // Don't ignore errors
 _ = doSomething() // Bad
-```text
+```
 
 ### Naming Conventions
 
@@ -45,7 +45,7 @@ func GetUserByID(id int) (*User, error) {}  // Also good
 type Reader interface {
     Read(p []byte) (n int, err error)
 }
-```text
+```
 
 ### Testing
 
@@ -72,7 +72,7 @@ func TestAdd(t *testing.T) {
         })
     }
 }
-```text
+```
 
 ## Best Practices
 
@@ -91,7 +91,7 @@ go func() {
         process(result)
     }
 }()
-```text
+```
 
 ### Channels
 
@@ -109,7 +109,7 @@ case msg := <-ch1:
 case <-ctx.Done():
     return
 }
-```text
+```
 
 ### Defer
 
@@ -125,7 +125,7 @@ func process() error {
     // Process file
     return nil
 }
-```text
+```
 
 ## Common Patterns
 
@@ -145,7 +145,7 @@ type postgresUserRepository struct {
 func (r *postgresUserRepository) FindByID(id int) (*User, error) {
     // Implementation
 }
-```text
+```
 
 ### Service Layer
 
@@ -167,7 +167,7 @@ func (s *UserService) GetUser(id int) (*User, error) {
     }
     return user, nil
 }
-```text
+```
 
 ## Tools
 

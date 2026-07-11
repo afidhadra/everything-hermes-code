@@ -21,7 +21,7 @@ Minimal configuration for getting started.
 # Copy to ~/.hermes/
 
 cp -r examples/basic/* ~/.hermes/
-```text
+```
 
 ## Full Setup
 
@@ -32,7 +32,7 @@ Complete configuration with all features.
 # Copy to ~/.hermes/
 
 cp -r examples/full/* ~/.hermes/
-```text
+```
 
 ## Project Setup
 
@@ -43,7 +43,7 @@ Per-project configuration.
 # Copy to project root
 
 cp -r examples/project/* ~/Projects/my-project/
-```text
+```
 
 ## Creating Examples
 

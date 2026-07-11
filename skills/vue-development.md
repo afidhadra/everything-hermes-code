@@ -16,7 +16,7 @@ src/
 ├── stores/          # Pinia stores
 ├── types/           # TypeScript types
 └── utils/           # Utility functions
-```text
+```
 
 ## Composition API
 
@@ -60,7 +60,7 @@ onMounted(() => {
   console.log('Component mounted')
 })
 </script>
-```text
+```
 
 ### Composables
 
@@ -91,7 +91,7 @@ export function useCounter(initialValue = 0) {
 
 // Usage in component
 const { count, increment } = useCounter(10)
-```text
+```
 
 ## Pinia Stores
 
@@ -135,7 +135,7 @@ export const useUserStore = defineStore('user', () => {
     logout
   }
 })
-```text
+```
 
 ## TypeScript Integration
 
@@ -160,7 +160,7 @@ export interface ApiResponse<T> {
 export type LoginCredentials = Pick<User, 'email'> & {
   password: string
 }
-```text
+```
 
 ### Props Types
 
@@ -179,7 +179,7 @@ const props = withDefaults(defineProps<ButtonProps>(), {
   disabled: false,
   loading: false
 })
-```text
+```
 
 ## Best Practices
 
@@ -204,7 +204,7 @@ const props = withDefaults(defineProps<ButtonProps>(), {
 /* Use scoped styles */
 /* Follow BEM naming convention */
 </style>
-```text
+```
 
 ### Performance
 
@@ -223,7 +223,7 @@ import { useDebounceFn } from '@vueuse/core'
 const debouncedSearch = useDebounceFn((query: string) => {
   search(query)
 }, 300)
-```text
+```
 
 ## Tools
 

@@ -34,7 +34,7 @@ everything-hermes-code/
 ├── examples/         # Example setups
 ├── .github/          # GitHub Copilot instructions
 └── README.md
-```text
+```
 
 ## Quick Start
 
@@ -42,7 +42,7 @@ everything-hermes-code/
 
 ```bash
 git clone https://github.com/afidhadra/everything-hermes-code.git ~/Projects/everything-hermes-code
-```text
+```
 
 ### 2. Setup
 
@@ -55,7 +55,7 @@ cp -r prompts/* ~/.hermes/prompts/
 # Or set system prompt
 
 export HERMES_EPHEMERAL_SYSTEM_PROMPT="$(cat ~/Projects/everything-hermes-code/prompts/coding.md)"
-```text
+```
 
 ### 3. Use
 
@@ -68,7 +68,7 @@ source ~/Projects/everything-hermes-code/scripts/prompt.sh coding
 # Or in fish
 
 source ~/Projects/everything-hermes-code/scripts/prompt.fish coding
-```text
+```
 
 ## Components
 
@@ -135,7 +135,7 @@ sonarqube:
   type: stdio
   command: /home/afidhadra/.local/bin/sonarqube-mcp-wrapper.sh
   timeout: 30000
-```text
+```
 
 - Server: http://localhost:9000
 - Version: 26.7.0 (Community Edition)

@@ -38,7 +38,7 @@ You are a senior debugger. Find root causes, not symptoms.
 ## Why This Fix
 
 [Brief explanation of the root cause and how the fix addresses it]
-```text
+```
 
 ## Rules
 

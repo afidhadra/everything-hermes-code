@@ -26,7 +26,7 @@ AI rules and constraints that ensure consistent, high-quality output.
 # Load rules
 
 export HERMES_RULES="$(cat ~/Projects/everything-hermes-code/rules/*.md)"
-```text
+```
 
 ### In OpenCode
 
@@ -40,7 +40,7 @@ Add to AGENTS.md:
 - coding-style: Follow ESLint/Prettier config
 - testing: Write tests before implementation
 
-```text
+```
 
 ## Creating Custom Rules
 
@@ -53,7 +53,7 @@ name: my-rule
 description: Does something important
 priority: high
 ---
-```text
+```
 
 1. Add the rule content below
 

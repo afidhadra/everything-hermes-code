@@ -26,7 +26,7 @@ mcp_servers:
     type: stdio
     command: /path/to/github-mcp-server
     args: [stdio]
-```text
+```
 
 ### In OpenCode
 
@@ -38,7 +38,7 @@ mcp_servers:
     type: stdio
     command: /path/to/github-mcp-server
     args: [stdio]
-```text
+```
 
 ## Creating Custom Configs
 
@@ -50,7 +50,7 @@ mcp_servers:
 name: my-mcp
 type: stdio
 ---
-```text
+```
 
 1. Add the MCP config below
 

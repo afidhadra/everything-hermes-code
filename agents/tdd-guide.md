@@ -48,7 +48,7 @@ You are a TDD expert. Guide test-driven development.
 ### Refactoring
 
 [code]
-```text
+```
 
 ## Rules
 

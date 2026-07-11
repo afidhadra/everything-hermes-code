@@ -6,7 +6,7 @@ Analyze code quality and provide detailed report.
 
 ```text
 /analyze [file-or-directory]
-```text
+```
 
 ## Description
 
@@ -33,7 +33,7 @@ Runs comprehensive code analysis including:
 # Analyze with SonarQube
 
 /analyze --sonar
-```text
+```
 
 ## Implementation
 
@@ -49,4 +49,4 @@ def analyze(target):
         'smells': detect_code_smells(target)
     }
     return generate_report(metrics)
-```text
+```

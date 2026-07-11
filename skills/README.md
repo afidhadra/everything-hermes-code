@@ -25,7 +25,7 @@ Reusable knowledge base for AI agents. Skills provide specific domain expertise.
 # Load skill
 
 export HERMES_SKILL="$(cat ~/Projects/everything-hermes-code/skills/coding-standards.md)"
-```text
+```
 
 ### In OpenCode
 
@@ -39,7 +39,7 @@ Add to AGENTS.md:
 - backend-patterns: REST API design
 - database-patterns: PostgreSQL optimization
 
-```text
+```
 
 ## Creating Custom Skills
 
@@ -55,7 +55,7 @@ related:
   - other-skill
 
 ---
-```text
+```
 
 1. Add the skill content below
 

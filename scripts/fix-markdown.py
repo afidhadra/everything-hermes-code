@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Enhanced markdownlint auto-fixer.
-Fixes: MD022, MD029, MD031, MD032, MD040, MD047, MD060, MD010
+Fixes: MD010, MD022, MD031, MD032, MD040, MD047, MD060
 Usage: python3 fix-markdown.py [directory]
 """
 
@@ -22,12 +22,10 @@ def fix_md022(content: str) -> str:
     for i, line in enumerate(lines):
         is_heading = re.match(r"^#{1,6}\s", line)
         if is_heading:
-            # Add blank line above if prev line is not blank and not start
             if result and result[-1].strip() != "":
                 result.append("")
         result.append(line)
         if is_heading:
-            # Add blank line below if next line exists and is not blank
             if i + 1 < len(lines) and lines[i + 1].strip() != "":
                 result.append("")
     return "\n".join(result)
@@ -41,12 +39,10 @@ def fix_md031(content: str) -> str:
     for i, line in enumerate(lines):
         if re.match(r"^```", line):
             if not in_fence:
-                # Opening fence: blank line above
                 if result and result[-1].strip() != "":
                     result.append("")
                 in_fence = True
             else:
-                # Closing fence: blank line below
                 result.append(line)
                 if i + 1 < len(lines) and lines[i + 1].strip() != "":
                     result.append("")
@@ -69,7 +65,6 @@ def fix_md032(content: str) -> str:
             if result and result[-1].strip() != "":
                 result.append("")
         result.append(line)
-        # Check if next line is not a list item
         next_is_list = False
         if i + 1 < len(lines):
             next_is_list = bool(
@@ -82,22 +77,30 @@ def fix_md032(content: str) -> str:
 
 
 def fix_md040(content: str) -> str:
-    """Fenced code blocks should have a language specified."""
+    """Fenced code blocks should have a language specified.
+    
+    Also fixes corrupted closing fences (```text → ```).
+    """
     lines = content.split("\n")
     result = []
     in_fence = False
     for line in lines:
         if re.match(r"^```", line):
             if not in_fence:
-                # Opening fence without language
+                # Opening fence: add language if missing
                 if re.match(r"^```\s*$", line):
                     result.append("```text")
                 else:
                     result.append(line)
                 in_fence = True
             else:
-                # Closing fence - keep as-is
-                result.append(line)
+                # Closing fence: strip language if present
+                # A closing fence should be just ``` (possibly with trailing spaces)
+                stripped = line.strip()
+                if stripped != "```":
+                    result.append("```")
+                else:
+                    result.append(line)
                 in_fence = False
         else:
             result.append(line)
@@ -115,10 +118,8 @@ def fix_md060(content: str) -> str:
     result = []
     for line in lines:
         if re.match(r"^\|.*\|.*\|$", line.strip()):
-            # Fix table rows: ensure space after | and before |
             line = re.sub(r"\|(\S)", r"| \1", line)
             line = re.sub(r"(\S)\|", r"\1 |", line)
-            # But keep leading | clean
             line = re.sub(r"^(\|) (\s)", r"\1\2", line)
         result.append(line)
     return "\n".join(result)
@@ -145,10 +146,10 @@ def fix_file(filepath: Path) -> int:
     content = original
 
     content = fix_md010(content)
-    content = fix_md022(content)
+    content = fix_md040(content)   # Fix fences first (before md031/032)
     content = fix_md031(content)
+    content = fix_md022(content)
     content = fix_md032(content)
-    content = fix_md040(content)
     content = fix_md047(content)
     content = fix_md029(content)
     content = fix_md060(content)

@@ -55,7 +55,7 @@ You are a senior code reviewer. Be direct, critical, and constructive.
    → [fix]
 
 🟢 GOOD: [what's done well]
-```text
+```
 
 ## Rules
 

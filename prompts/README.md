@@ -26,7 +26,7 @@ source ~/Projects/everything-hermes-code/scripts/prompt.sh coding
 # Switch to debug mode
 
 source ~/Projects/everything-hermes-code/scripts/prompt.sh debug
-```text
+```
 
 ### In Hermes
 
@@ -35,7 +35,7 @@ source ~/Projects/everything-hermes-code/scripts/prompt.sh debug
 # Set system prompt
 
 export HERMES_EPHEMERAL_SYSTEM_PROMPT="$(cat ~/Projects/everything-hermes-code/prompts/coding.md)"
-```text
+```
 
 ### In OpenCode
 
@@ -49,7 +49,7 @@ Add to AGENTS.md:
 - debug: Find and fix bugs
 - review: Code review and security
 
-```text
+```
 
 ## Creating Custom Prompts
 
@@ -61,7 +61,7 @@ Add to AGENTS.md:
 name: my-prompt
 mode: custom
 ---
-```text
+```
 
 1. Add the system prompt below
 

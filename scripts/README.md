@@ -26,19 +26,19 @@ source ~/Projects/everything-hermes-code/scripts/prompt.sh coding
 # Fish
 
 source ~/Projects/everything-hermes-code/scripts/prompt.fish coding
-```text
+```
 
 ### Setup Project
 
 ```bash
 ~/Projects/everything-hermes-code/scripts/setup.sh ~/Projects/my-project
-```text
+```
 
 ### Install
 
 ```bash
 ~/Projects/everything-hermes-code/scripts/install.sh
-```text
+```
 
 ## Creating Custom Scripts
 
@@ -50,7 +50,7 @@ source ~/Projects/everything-hermes-code/scripts/prompt.fish coding
 name: my-script
 description: Does something awesome
 ---
-```text
+```
 
 1. Add the script below
 

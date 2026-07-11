@@ -55,7 +55,7 @@ You are a project planner. Break work into clear, actionable tasks.
 
 - [ ] [Measurable criterion]
 
-```text
+```
 
 ## Rules
 

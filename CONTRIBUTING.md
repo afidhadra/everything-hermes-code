@@ -35,7 +35,7 @@ npm install
 # Run tests
 
 npm test
-```text
+```
 
 ### Project Structure
 
@@ -52,7 +52,7 @@ everything-hermes-code/
 ├── mcp-configs/      # MCP server configs
 ├── examples/         # Example setups
 └── tests/            # Tests
-```text
+```
 
 ### Adding New Components
 

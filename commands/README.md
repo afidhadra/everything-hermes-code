@@ -31,7 +31,7 @@ source ~/Projects/everything-hermes-code/scripts/prompt.sh coding
 # Switch to debug mode
 
 source ~/Projects/everything-hermes-code/scripts/prompt.sh debug
-```text
+```
 
 ### In Hermes
 
@@ -40,7 +40,7 @@ source ~/Projects/everything-hermes-code/scripts/prompt.sh debug
 # Set system prompt
 
 export HERMES_EPHEMERAL_SYSTEM_PROMPT="$(cat ~/Projects/everything-hermes-code/agents/coder.md)"
-```text
+```
 
 ### In OpenCode
 
@@ -52,7 +52,7 @@ export HERMES_EPHEMERAL_SYSTEM_PROMPT="$(cat ~/Projects/everything-hermes-code/a
 - `/debug` — Debug mode
 - `/review` — Review mode
 
-```text
+```
 
 ## Creating Custom Commands
 
@@ -65,7 +65,7 @@ name: my-command
 description: Does something awesome
 agent: coder
 ---
-```text
+```
 
 1. Add the system prompt below
 

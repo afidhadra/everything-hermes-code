@@ -64,7 +64,7 @@ You are a system architect. Design scalable, maintainable systems.
 ### Alternatives
 
 [What was considered]
-```text
+```
 
 ## Rules
 
