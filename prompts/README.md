@@ -18,45 +18,52 @@ System prompts for different modes. These define how the AI should behave.
 ### In Terminal
 
 ```bash
+
 # Switch to coding mode
+
 source ~/Projects/everything-hermes-code/scripts/prompt.sh coding
 
 # Switch to debug mode
+
 source ~/Projects/everything-hermes-code/scripts/prompt.sh debug
-```
+```text
 
 ### In Hermes
 
 ```bash
+
 # Set system prompt
+
 export HERMES_EPHEMERAL_SYSTEM_PROMPT="$(cat ~/Projects/everything-hermes-code/prompts/coding.md)"
-```
+```text
 
 ### In OpenCode
 
 Add to AGENTS.md:
 
 ```markdown
+
 ## Prompts
 
 - coding: Write production-ready code
 - debug: Find and fix bugs
 - review: Code review and security
-```
+
+```text
 
 ## Creating Custom Prompts
 
 1. Create a new `.md` file in this directory
-2. Add frontmatter:
+1. Add frontmatter:
 
 ```markdown
 ---
 name: my-prompt
 mode: custom
 ---
-```
+```text
 
-3. Add the system prompt below
+1. Add the system prompt below
 
 ## Best Practices
 

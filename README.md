@@ -21,7 +21,7 @@ Inspired by [Everything Claude Code](https://github.com/WorldFlowAI/everything-c
 
 ## Directory Structure
 
-```
+```text
 everything-hermes-code/
 ├── agents/           # Specialized AI agents
 ├── commands/         # Slash commands
@@ -34,7 +34,7 @@ everything-hermes-code/
 ├── mcp-configs/      # MCP server configs
 ├── examples/         # Example setups
 └── README.md
-```
+```text
 
 ## Quick Start
 
@@ -42,27 +42,33 @@ everything-hermes-code/
 
 ```bash
 git clone https://github.com/afidhadra/everything-hermes-code.git ~/Projects/everything-hermes-code
-```
+```text
 
 ### 2. Setup
 
 ```bash
+
 # Copy prompts to Hermes
+
 cp -r prompts/* ~/.hermes/prompts/
 
 # Or set system prompt
+
 export HERMES_EPHEMERAL_SYSTEM_PROMPT="$(cat ~/Projects/everything-hermes-code/prompts/coding.md)"
-```
+```text
 
 ### 3. Use
 
 ```bash
+
 # Switch mode
+
 source ~/Projects/everything-hermes-code/scripts/prompt.sh coding
 
 # Or in fish
+
 source ~/Projects/everything-hermes-code/scripts/prompt.fish coding
-```
+```text
 
 ## Components
 
@@ -118,6 +124,7 @@ source ~/Projects/everything-hermes-code/scripts/prompt.fish coding
 ## Model
 
 **Big Pickle** (GLM-4.6 via OpenCode Zen)
+
 - Context: 200K tokens
 - Max output: 128K tokens
 - Price: Free

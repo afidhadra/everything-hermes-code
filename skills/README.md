@@ -21,37 +21,43 @@ Reusable knowledge base for AI agents. Skills provide specific domain expertise.
 ### In Hermes
 
 ```bash
+
 # Load skill
+
 export HERMES_SKILL="$(cat ~/Projects/everything-hermes-code/skills/coding-standards.md)"
-```
+```text
 
 ### In OpenCode
 
 Add to AGENTS.md:
 
 ```markdown
+
 ## Skills
 
 - coding-standards: TypeScript best practices
 - backend-patterns: REST API design
 - database-patterns: PostgreSQL optimization
-```
+
+```text
 
 ## Creating Custom Skills
 
 1. Create a new `.md` file in this directory
-2. Add frontmatter:
+1. Add frontmatter:
 
 ```markdown
 ---
 name: my-skill
 description: Does something awesome
 related:
-  - other-skill
----
-```
 
-3. Add the skill content below
+  - other-skill
+
+---
+```text
+
+1. Add the skill content below
 
 ## Best Practices
 

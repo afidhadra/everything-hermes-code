@@ -23,34 +23,41 @@ Slash commands for quick workflow switching. These are shortcuts to load specifi
 ### In Terminal
 
 ```bash
+
 # Switch to coding mode
+
 source ~/Projects/everything-hermes-code/scripts/prompt.sh coding
 
 # Switch to debug mode
+
 source ~/Projects/everything-hermes-code/scripts/prompt.sh debug
-```
+```text
 
 ### In Hermes
 
 ```bash
+
 # Set system prompt
+
 export HERMES_EPHEMERAL_SYSTEM_PROMPT="$(cat ~/Projects/everything-hermes-code/agents/coder.md)"
-```
+```text
 
 ### In OpenCode
 
 ```markdown
+
 ## Quick Commands
 
 - `/code` — Coding mode
 - `/debug` — Debug mode
 - `/review` — Review mode
-```
+
+```text
 
 ## Creating Custom Commands
 
 1. Create a new `.md` file in this directory
-2. Add frontmatter:
+1. Add frontmatter:
 
 ```markdown
 ---
@@ -58,9 +65,9 @@ name: my-command
 description: Does something awesome
 agent: coder
 ---
-```
+```text
 
-3. Add the system prompt below
+1. Add the system prompt below
 
 ## Best Practices
 

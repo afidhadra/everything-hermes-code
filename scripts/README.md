@@ -18,38 +18,41 @@ Automation and setup scripts for quick configuration.
 ### Switch Mode
 
 ```bash
+
 # Bash
+
 source ~/Projects/everything-hermes-code/scripts/prompt.sh coding
 
 # Fish
+
 source ~/Projects/everything-hermes-code/scripts/prompt.fish coding
-```
+```text
 
 ### Setup Project
 
 ```bash
 ~/Projects/everything-hermes-code/scripts/setup.sh ~/Projects/my-project
-```
+```text
 
 ### Install
 
 ```bash
 ~/Projects/everything-hermes-code/scripts/install.sh
-```
+```text
 
 ## Creating Custom Scripts
 
 1. Create a new `.sh` or `.py` file in this directory
-2. Add frontmatter:
+1. Add frontmatter:
 
 ```markdown
 ---
 name: my-script
 description: Does something awesome
 ---
-```
+```text
 
-3. Add the script below
+1. Add the script below
 
 ## Best Practices
 

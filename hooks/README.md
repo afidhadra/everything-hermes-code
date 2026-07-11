@@ -19,28 +19,40 @@ Pre/Post execution hooks for automation. Hooks run before or after AI actions.
 ### In Hermes
 
 ```yaml
+
 # ~/.hermes/config.yaml
+
 hooks:
   pre_tool_use:
+
     - validate_input
+
   post_tool_use:
+
     - log_action
-```
+
+```text
 
 ### In OpenCode
 
 ```yaml
+
 # .opencode/hooks.yaml
+
 pre_tool_use:
+
   - validate_input
+
 post_tool_use:
+
   - log_action
-```
+
+```text
 
 ## Creating Custom Hooks
 
 1. Create a new `.sh` or `.js` file in this directory
-2. Add frontmatter:
+1. Add frontmatter:
 
 ```markdown
 ---
@@ -48,9 +60,9 @@ name: my-hook
 type: pre
 tool: bash
 ---
-```
+```text
 
-3. Add the hook script below
+1. Add the hook script below
 
 ## Hook Types
 

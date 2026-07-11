@@ -26,7 +26,7 @@ mcp_servers:
     type: stdio
     command: /path/to/github-mcp-server
     args: [stdio]
-```
+```text
 
 ### In OpenCode
 
@@ -38,21 +38,21 @@ mcp_servers:
     type: stdio
     command: /path/to/github-mcp-server
     args: [stdio]
-```
+```text
 
 ## Creating Custom Configs
 
 1. Create a new `.yaml` file in this directory
-2. Add frontmatter:
+1. Add frontmatter:
 
 ```markdown
 ---
 name: my-mcp
 type: stdio
 ---
-```
+```text
 
-3. Add the MCP config below
+1. Add the MCP config below
 
 ## MCP Server Types
 

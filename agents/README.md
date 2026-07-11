@@ -26,37 +26,41 @@ Load agent via system prompt:
 
 ```bash
 export HERMES_EPHEMERAL_SYSTEM_PROMPT="$(cat ~/Projects/everything-hermes-code/agents/coder.md)"
-```
+```text
 
 ### In OpenCode
 
 Add to AGENTS.md:
 
 ```markdown
+
 ## Agents
 
 - coder: Write production-ready code
 - debugger: Find and fix bugs
 - reviewer: Code review and security
-```
+
+```text
 
 ## Creating Custom Agents
 
 1. Create a new `.md` file in this directory
-2. Add frontmatter:
+1. Add frontmatter:
 
 ```markdown
 ---
 name: my-agent
 role: Write awesome code
 permissions:
+
   - edit
   - bash
   - read
----
-```
 
-3. Add system prompt below
+---
+```text
+
+1. Add system prompt below
 
 ## Agent Permissions
 

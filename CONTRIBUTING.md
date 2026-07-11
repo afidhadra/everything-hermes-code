@@ -7,10 +7,10 @@ This is a Claude Code-style toolkit for Hermes Agent. It provides a complete AI 
 ## Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+1. Create a feature branch (`git checkout -b feature/amazing-feature`)
+1. Commit your changes (`git commit -m 'Add amazing feature'`)
+1. Push to the branch (`git push origin feature/amazing-feature`)
+1. Open a Pull Request
 
 ## Development
 
@@ -23,19 +23,23 @@ This is a Claude Code-style toolkit for Hermes Agent. It provides a complete AI 
 ### Setup
 
 ```bash
+
 # Clone the repo
+
 git clone https://github.com/afidhadra/everything-hermes-code.git
 
 # Install dependencies
+
 npm install
 
 # Run tests
+
 npm test
-```
+```text
 
 ### Project Structure
 
-```
+```text
 everything-hermes-code/
 ├── agents/           # Specialized AI agents
 ├── commands/         # Slash commands
@@ -48,15 +52,15 @@ everything-hermes-code/
 ├── mcp-configs/      # MCP server configs
 ├── examples/         # Example setups
 └── tests/            # Tests
-```
+```text
 
 ### Adding New Components
 
 1. Follow the existing structure
-2. Add frontmatter with name, description, and metadata
-3. Include examples where appropriate
-4. Update README.md
-5. Add tests if applicable
+1. Add frontmatter with name, description, and metadata
+1. Include examples where appropriate
+1. Update README.md
+1. Add tests if applicable
 
 ## License
 

@@ -22,26 +22,30 @@ AI rules and constraints that ensure consistent, high-quality output.
 ### In Hermes
 
 ```bash
+
 # Load rules
+
 export HERMES_RULES="$(cat ~/Projects/everything-hermes-code/rules/*.md)"
-```
+```text
 
 ### In OpenCode
 
 Add to AGENTS.md:
 
 ```markdown
+
 ## Rules
 
 - security: No hardcoded secrets, validate all inputs
 - coding-style: Follow ESLint/Prettier config
 - testing: Write tests before implementation
-```
+
+```text
 
 ## Creating Custom Rules
 
 1. Create a new `.md` file in this directory
-2. Add frontmatter:
+1. Add frontmatter:
 
 ```markdown
 ---
@@ -49,9 +53,9 @@ name: my-rule
 description: Does something important
 priority: high
 ---
-```
+```text
 
-3. Add the rule content below
+1. Add the rule content below
 
 ## Rule Priorities
 
