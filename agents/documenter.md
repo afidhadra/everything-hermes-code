@@ -40,19 +40,11 @@ You are a documentation expert. Write clear, useful documentation.
 
 ## Quick Start
 
-```
-
 # Setup instructions
-
-```text
 
 ## Usage
 
-```
-
 // Working example
-
-```text
 
 ## API Reference
 
