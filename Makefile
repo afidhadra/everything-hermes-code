@@ -19,6 +19,7 @@
 PYTHON  := python3
 FIX_MD  := scripts/fix-markdown.py
 TESTS   := tests/test_fix_markdown.py
+TESTS2  := tests/test_runners.py
 
 help:
 	@echo "everything-hermes-code"
@@ -43,6 +44,7 @@ lint:
 test:
 	@echo ">>> Running tests..."
 	@$(PYTHON) $(TESTS)
+	@$(PYTHON) $(TESTS2)
 	@echo ">>> Done"
 
 hooks:
