@@ -1,26 +1,23 @@
 #!/bin/bash
 set -euo pipefail
 
-# Review command - Code review
+# Review command — routes to orchestrator for AI-powered review
+# For static analysis, use analyze.sh (SonarQube) instead.
 
 TARGET="${1:-.}"
-FOCUS="${2:-all}"
 
-echo "📋 Code Review..."
+echo "📋 Code Review via AI Orchestrator..."
 echo "📁 Target: $TARGET"
-echo "🎯 Focus: $FOCUS"
 echo ""
 
-# Run markdown linting check
-echo "📝 Markdown Check:"
-python3 scripts/fix-markdown.py "$TARGET" 2>/dev/null
-
-# Run code review (placeholder)
-echo ""
-echo "💻 Code Review:"
-echo "  - Security: No critical issues"
-echo "  - Performance: Acceptable"
-echo "  - Style: Consistent"
-
-echo ""
-echo "✅ Review complete"
+if [ -f scripts/orchestrator.py ]; then
+    # Use orchestrator with reviewer + security agents
+    python3 scripts/orchestrator.py \
+        "Review code quality and security of $TARGET" \
+        --no-worktree
+else
+    echo "⚠️  orchestrator.py not found."
+    echo "   For static analysis, use: bash scripts/commands/analyze.sh $TARGET"
+    echo "   Without the orchestrator, no automated review is performed."
+    exit 1
+fi
