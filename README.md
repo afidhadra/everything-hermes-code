@@ -10,14 +10,14 @@ Inspired by [Everything Claude Code](https://github.com/WorldFlowAI/everything-c
 
 | Component | Count | Description |
 |-----------|-------|-------------|
-| Agents | 9+ | Specialized AI agents for different tasks |
-| Commands | 9+ | Slash commands for quick workflows |
-| Rules | 8+ | AI rules and constraints |
-| Skills | 7+ | Reusable knowledge base |
-| Hooks | 5+ | Pre/Post execution automation |
+| Agents | 9 | Specialized AI agents for different tasks |
+| Commands | 4 | Slash commands for quick workflows |
+| Rules | 5 | AI rules and constraints |
+| Skills | 4 | Reusable knowledge base |
+| Hooks | 1 | Pre/Post execution automation |
 | Prompts | 4 | System prompts for different modes |
-| MCP Configs | 10+ | Server configurations |
-| Scripts | 5+ | Automation and setup scripts |
+| MCP Configs | 1 | Server configurations (SonarQube) |
+| Scripts | 1 | Automation scripts |
 
 ## Directory Structure
 
@@ -30,11 +30,11 @@ everything-hermes-code/
 ├── hooks/            # Pre/Post execution hooks
 ├── prompts/          # System prompts (coding, debug, review, analysis)
 ├── scripts/          # Automation scripts
-├── config/           # Config templates
 ├── mcp-configs/      # MCP server configs
 ├── examples/         # Example setups
+├── .github/          # GitHub Copilot instructions
 └── README.md
-```text
+```
 
 ## Quick Start
 
@@ -42,33 +42,27 @@ everything-hermes-code/
 
 ```bash
 git clone https://github.com/afidhadra/everything-hermes-code.git ~/Projects/everything-hermes-code
-```text
+```
 
 ### 2. Setup
 
 ```bash
-
 # Copy prompts to Hermes
-
 cp -r prompts/* ~/.hermes/prompts/
 
 # Or set system prompt
-
 export HERMES_EPHEMERAL_SYSTEM_PROMPT="$(cat ~/Projects/everything-hermes-code/prompts/coding.md)"
-```text
+```
 
 ### 3. Use
 
 ```bash
-
 # Switch mode
-
 source ~/Projects/everything-hermes-code/scripts/prompt.sh coding
 
 # Or in fish
-
 source ~/Projects/everything-hermes-code/scripts/prompt.fish coding
-```text
+```
 
 ## Components
 
@@ -90,15 +84,19 @@ source ~/Projects/everything-hermes-code/scripts/prompt.fish coding
 
 | Command | Description |
 |---------|-------------|
-| /code | Switch to coding mode |
-| /debug | Switch to debug mode |
-| /review | Switch to review mode |
-| /analyze | Switch to analysis mode |
-| /plan | Plan a feature or project |
-| /test | Generate and run tests |
-| /refactor | Refactor code with best practices |
-| /document | Generate documentation |
-| /security | Run security audit |
+| /analyze | Analyze code quality and metrics |
+| /fix | Auto-fix linting and formatting issues |
+| /review | Comprehensive code review |
+| /security | Security vulnerability scan |
+
+### Skills
+
+| Skill | Description |
+|-------|-------------|
+| go-development | Go best practices and patterns |
+| vue-development | Vue 3/TypeScript best practices |
+| docker-workflow | Docker development workflow |
+| git-workflow | Git best practices and conventions |
 
 ### Rules
 
@@ -106,20 +104,13 @@ source ~/Projects/everything-hermes-code/scripts/prompt.fish coding
 - coding-style.md — Coding standards
 - testing.md — Testing guidelines
 - git-workflow.md — Git conventions
-- performance.md — Performance optimization
-- documentation.md — Documentation standards
-- error-handling.md — Error handling patterns
-- api-design.md — API design principles
 
-### Skills
+### Prompts
 
-- coding-standards — Language-specific standards
-- backend-patterns — Backend architecture
-- frontend-patterns — Frontend architecture
-- database-patterns — Database design
-- devops-patterns — CI/CD and deployment
-- debugging-patterns — Debugging strategies
-- security-patterns — Security implementation
+- coding.md — Production-ready code generation
+- debug.md — Root cause analysis
+- review.md — Code review and security
+- analysis.md — Systems analysis
 
 ## Model
 
@@ -129,11 +120,27 @@ source ~/Projects/everything-hermes-code/scripts/prompt.fish coding
 - Max output: 128K tokens
 - Price: Free
 
+## MCP Servers
+
+### SonarQube (Configured)
+
+```yaml
+sonarqube:
+  type: stdio
+  command: /home/afidhadra/.local/bin/sonarqube-mcp-wrapper.sh
+  timeout: 30000
+```
+
+- Server: http://localhost:9000
+- Version: 26.7.0 (Community Edition)
+- Token: ~/.sonarqube_token
+
 ## Compatibility
 
 - Hermes Agent ✓
 - OpenCode ✓
 - Claude Code (partial) ✓
+- GitHub Copilot ✓
 
 ## License
 
@@ -144,3 +151,4 @@ MIT — Use freely, modify as needed.
 - [Everything Claude Code](https://github.com/WorldFlowAI/everything-claude-code) — Inspiration
 - [Hermes Agent](https://github.com/NousResearch/hermes-agent) — Platform
 - [OpenCode Zen](https://opencode.ai) — Model provider
+- [SonarQube](https://www.sonarsource.com) — Code quality
