@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail
+
 # Pre-push hook for final checks
 
 echo "🔍 Running pre-push checks..."

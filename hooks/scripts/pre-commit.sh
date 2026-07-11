@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail
+
 # Pre-commit hook for markdown linting
 
 echo "🔍 Running pre-commit checks..."

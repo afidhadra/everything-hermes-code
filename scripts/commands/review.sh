@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail
+
 # Review command - Code review
 
 TARGET="${1:-.}"

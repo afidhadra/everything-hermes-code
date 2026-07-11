@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail
+
 #
 # analyze.sh — Code quality analysis via SonarQube API
 #

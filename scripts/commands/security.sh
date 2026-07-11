@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail
+
 # Security command - Security scan
 
 TARGET="${1:-.}"

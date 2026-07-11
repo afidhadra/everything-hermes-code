@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail
+
 # Fix command - Auto-fix linting issues
 
 TARGET="${1:-.}"

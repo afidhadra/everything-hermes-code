@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail
+
 # Post-commit hook for notifications
 
 COMMIT_HASH=$(git rev-parse --short HEAD)
