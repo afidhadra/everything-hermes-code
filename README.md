@@ -1,5 +1,7 @@
 # Everything Hermes Code
 
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+
 **Claude Code-style toolkit for Hermes Agent**
 
 Complete AI development workflow for Hermes + Big Pickle (GLM-4.6) — agents, commands, skills, rules, hooks, prompts, and MCP configs.
