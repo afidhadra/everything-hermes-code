@@ -8,4 +8,4 @@ node_modules/
 *.pyc
 __pycache__/
 .venv/
-venv/
+venv/reports/
