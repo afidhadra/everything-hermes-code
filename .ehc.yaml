@@ -1,0 +1,101 @@
+# Everything Hermes Code — Project Configuration
+#
+# Copy this file to your project root as .ehc.yaml and customize.
+# All tools (ehc.py, deploy.py, docker-check.py) read from this file.
+#
+# Multiple projects: put .ehc.yaml in each project root.
+# Switch with: --config /path/to/project/.ehc.yaml
+
+project:
+  name: FROZEN-POS
+  root: ~/Projects/Freelance/FROZEN-POS
+
+# Repository definitions (for deploy.py, repo-status, regression-analyzer)
+repos:
+  be:
+    name: frozen-pos-api (Backend)
+    dir: frozen-pos-api
+    lang: go
+    container: frozen-pos-api-dev
+    health_url: http://localhost:8080/api/v1/health
+    compose_service: api
+
+  fe:
+    name: frozen-pos-frontend (Frontend)
+    dir: frozen-pos-frontend
+    lang: vue
+    container: frozen-pos-frontend-dev
+    health_url: http://localhost:5173
+    compose_service: frontend
+
+# Docker deployment (for deploy.py)
+deploy:
+  dir: inventory-deploy
+  compose_dev: docker-compose.dev.yml
+  compose_prod: docker-compose.prod.yml
+  health_timeout: 60
+  health_interval: 2
+
+# Docker containers (for docker-check.py, ehc.py)
+docker:
+  containers:
+    frozen-pos-api-dev:
+      friendly: Frozen POS API
+      health_url: http://localhost:8080/api/v1/health
+      auto_restart: true
+      priority: 1
+
+    frozen-pos-frontend-dev:
+      friendly: Frozen POS Frontend
+      health_url: http://localhost:5173
+      auto_restart: true
+      priority: 1
+
+    frozen-pos-postgres-dev:
+      friendly: Frozen POS PostgreSQL
+      auto_restart: true
+      priority: 2
+
+    frozen-pos-redis-dev:
+      friendly: Frozen POS Redis
+      auto_restart: true
+      priority: 2
+
+    frozen-pos-pgadmin-dev:
+      friendly: Frozen POS pgAdmin
+      auto_restart: false
+      priority: 3
+
+    sonarqube:
+      friendly: SonarQube
+      health_url: http://localhost:9000/api/system/status
+      auto_restart: false
+      priority: 3
+
+    9router:
+      friendly: 9Router Proxy
+      auto_restart: false
+      priority: 3
+
+    ogham-postgres:
+      friendly: Ogham PostgreSQL
+      auto_restart: false
+      priority: 3
+
+# Service health endpoints (for ehc.py dashboard)
+services:
+  - name: API
+    url: http://localhost:8080/api/v1/health
+    type: http
+  - name: Frontend
+    url: http://localhost:5173
+    type: http
+  - name: PostgreSQL
+    url: localhost:5433
+    type: tcp
+  - name: Redis
+    url: localhost:6380
+    type: tcp
+  - name: pgAdmin
+    url: localhost:5052
+    type: tcp

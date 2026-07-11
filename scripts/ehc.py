@@ -5,14 +5,15 @@ Everything Hermes Code — Unified Dashboard
 Single command that shows everything at a glance:
   - Docker container health
   - Multi-repo git status
-  - Frozen-pos deploy status
+  - Service health checks
   - System resources (CPU, RAM, disk)
 
 Usage:
-    python3 ehc.py                  # full dashboard
-    python3 ehc.py status           # same as default
+    python3 ehc.py                  # full dashboard (auto-detect config)
+    python3 ehc.py --config X.yaml  # use specific config
     python3 ehc.py --watch          # refresh every 30s
     python3 ehc.py --json           # JSON output
+    python3 ehc.py --list           # list available configs
 """
 
 import argparse
@@ -23,6 +24,10 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
+
+# Import config loader
+sys.path.insert(0, str(Path(__file__).parent))
+import ehc_config
 
 # Colors
 RED = "\033[0;31m"
@@ -306,21 +311,27 @@ def make_bar(pct: int, width: int = 20) -> str:
 # Deploy Status
 # ============================================================
 
-def get_deploy_health() -> list[str]:
-    """Quick health check for frozen-pos services."""
-    lines = [f"\n  {BOLD}FROZEN-POS HEALTH{NC}"]
+def get_service_health(services: list) -> list[str]:
+    """Quick health check for configured services."""
+    if not services:
+        # Fallback defaults
+        services = [
+            {"name": "API", "url": "http://localhost:8080/api/v1/health", "type": "http"},
+            {"name": "Frontend", "url": "http://localhost:5173", "type": "http"},
+            {"name": "PostgreSQL", "url": "localhost:5433", "type": "tcp"},
+            {"name": "Redis", "url": "localhost:6380", "type": "tcp"},
+            {"name": "pgAdmin", "url": "localhost:5052", "type": "tcp"},
+        ]
+
+    lines = [f"\n  {BOLD}SERVICE HEALTH{NC}"]
     lines.append(f"  {DIM}{LINE}{NC}")
 
-    checks = [
-        ("API", "http://localhost:8080/api/v1/health"),
-        ("Frontend", "http://localhost:5173"),
-        ("PostgreSQL", "localhost:5433"),
-        ("Redis", "localhost:6380"),
-        ("pgAdmin", "localhost:5052"),
-    ]
+    for svc in services:
+        name = svc.get("name", "?")
+        endpoint = svc.get("url", "")
+        stype = svc.get("type", "http")
 
-    for name, endpoint in checks:
-        if endpoint.startswith("http"):
+        if stype == "http":
             try:
                 r = subprocess.run(
                     ["curl", "-s", "-o", "/dev/null", "-w", "%{http_code}",
@@ -336,10 +347,9 @@ def get_deploy_health() -> list[str]:
                     lines.append(f"    {RED}✗{NC} {name:15s} {DIM}{endpoint}{NC} [{RED}DOWN{NC}]")
             except Exception:
                 lines.append(f"    {RED}?{NC} {name:15s} {DIM}{endpoint}{NC} [{RED}ERR{NC}]")
-        else:
-            # Port check
-            host, port = endpoint.split(":")
+        elif stype == "tcp":
             import socket
+            host, port = endpoint.split(":")
             try:
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.settimeout(2)
@@ -359,12 +369,16 @@ def get_deploy_health() -> list[str]:
 # Dashboard
 # ============================================================
 
-def render_dashboard(frozen_root: str):
-    """Render full dashboard."""
+def render_dashboard(config: dict):
+    """Render full dashboard using config."""
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    project_name = config.get("project", {}).get("name", "EHC")
+    project_root = ehc_config.get_project_root(config)
+    services = ehc_config.get_services(config)
+    repos_cfg = ehc_config.get_repos(config)
 
     print(f"\n{BOLD}{CYAN}{DLINE}{NC}")
-    print(f"{BOLD}{CYAN}  EHC DASHBOARD{NC}  {DIM}{now}{NC}")
+    print(f"{BOLD}{CYAN}  {project_name} DASHBOARD{NC}  {DIM}{now}{NC}")
     print(f"{BOLD}{CYAN}{DLINE}{NC}")
 
     # Docker
@@ -372,21 +386,23 @@ def render_dashboard(frozen_root: str):
     for line in render_docker(containers):
         print(line)
 
-    # Frozen-pos repos
+    # Repos from config
     repos = []
-    be_path = os.path.join(frozen_root, "frozen-pos-api")
-    fe_path = os.path.join(frozen_root, "frozen-pos-frontend")
-    if os.path.isdir(os.path.join(be_path, ".git")):
-        repos.append(get_repo_status(be_path, "frozen-pos-api"))
-    if os.path.isdir(os.path.join(fe_path, ".git")):
-        repos.append(get_repo_status(fe_path, "frozen-pos-frontend"))
+    for key, rcfg in repos_cfg.items():
+        repo_path = os.path.join(project_root, os.path.basename(rcfg.get("dir", key)))
+        # Try path as-is first (in case it's absolute), then relative to project root
+        if not os.path.isdir(os.path.join(repo_path, ".git")):
+            repo_path = rcfg.get("dir", key)
+            repo_path = os.path.expanduser(repo_path)
+        if os.path.isdir(os.path.join(repo_path, ".git")):
+            repos.append(get_repo_status(repo_path, rcfg.get("name", key)))
 
     if repos:
         for line in render_repos(repos):
             print(line)
 
-    # Deploy health
-    for line in get_deploy_health():
+    # Service health from config
+    for line in get_service_health(services):
         print(line)
 
     # System
@@ -412,20 +428,23 @@ def render_dashboard(frozen_root: str):
     print(f"  {BOLD}{CYAN}{DLINE}{NC}\n")
 
 
-def render_json(frozen_root: str):
+def render_json(config: dict):
     """Output JSON."""
+    project_root = ehc_config.get_project_root(config)
+    repos_cfg = ehc_config.get_repos(config)
+
     data = {
         "timestamp": datetime.now().isoformat(),
         "docker": get_docker_status(),
         "repos": [],
         "system": get_system_info(),
     }
-    be_path = os.path.join(frozen_root, "frozen-pos-api")
-    fe_path = os.path.join(frozen_root, "frozen-pos-frontend")
-    if os.path.isdir(os.path.join(be_path, ".git")):
-        data["repos"].append(get_repo_status(be_path, "frozen-pos-api"))
-    if os.path.isdir(os.path.join(fe_path, ".git")):
-        data["repos"].append(get_repo_status(fe_path, "frozen-pos-frontend"))
+    for key, rcfg in repos_cfg.items():
+        repo_path = os.path.join(project_root, os.path.basename(rcfg.get("dir", key)))
+        if not os.path.isdir(os.path.join(repo_path, ".git")):
+            repo_path = os.path.expanduser(rcfg.get("dir", key))
+        if os.path.isdir(os.path.join(repo_path, ".git")):
+            data["repos"].append(get_repo_status(repo_path, rcfg.get("name", key)))
     print(json.dumps(data, indent=2))
 
 
@@ -433,16 +452,18 @@ def render_json(frozen_root: str):
 # Main
 # ============================================================
 
-DEFAULT_FROZEN_ROOT = str(Path.home() / "Projects" / "Freelance" / "FROZEN-POS")
-
 
 def main():
     parser = argparse.ArgumentParser(
         description="EHC Dashboard — unified status at a glance"
     )
     parser.add_argument(
-        "--frozen-root", type=str, default=DEFAULT_FROZEN_ROOT,
-        help="Frozen-pos project root"
+        "--config", "-c", type=str, default=None,
+        help="Path to .ehc.yaml config file (auto-detected by default)"
+    )
+    parser.add_argument(
+        "--list", action="store_true",
+        help="List available .ehc.yaml configs under ~/Projects"
     )
     parser.add_argument(
         "--watch", "-w", action="store_true",
@@ -459,21 +480,36 @@ def main():
 
     args = parser.parse_args()
 
+    # List mode
+    if args.list:
+        configs = ehc_config.list_available_configs()
+        if configs:
+            print(f"\n  {BOLD}Available .ehc.yaml configs:{NC}")
+            for c in configs:
+                print(f"    {GREEN}→{NC} {c}")
+        else:
+            print(f"\n  {YELLOW}No .ehc.yaml files found under ~/Projects{NC}")
+            print(f"  Copy .ehc.yaml template to your project root.")
+        return
+
+    # Load config
+    config = ehc_config.load_config(args.config)
+
     if args.json:
-        render_json(args.frozen_root)
+        render_json(config)
         return
 
     if args.watch:
         try:
             while True:
                 subprocess.run(["clear"])
-                render_dashboard(args.frozen_root)
+                render_dashboard(config)
                 print(f"  {DIM}Refreshing in {args.interval}s... (Ctrl+C to stop){NC}")
                 time.sleep(args.interval)
         except KeyboardInterrupt:
             print(f"\n  {GREEN}Stopped.{NC}")
     else:
-        render_dashboard(args.frozen_root)
+        render_dashboard(config)
 
         # Exit code
         containers = get_docker_status()
