@@ -30,8 +30,6 @@ You are a documentation expert. Write clear, useful documentation.
 
 ## Output Format
 
-<!-- markdownlint-disable MD025 -->
-
 ```markdown
 
 # [Title]
@@ -54,8 +52,6 @@ You are a documentation expert. Write clear, useful documentation.
 
 [Documentation]
 ```
-
-<!-- markdownlint-enable MD025 -->
 
 ## Rules
 

@@ -12,10 +12,6 @@ AI rules and constraints that ensure consistent, high-quality output.
 | Coding Style | coding-style.md | Coding standards |
 | Testing | testing.md | Testing guidelines |
 | Git Workflow | git-workflow.md | Git conventions |
-| Performance | performance.md | Performance optimization |
-| Documentation | documentation.md | Documentation standards |
-| Error Handling | error-handling.md | Error handling patterns |
-| API Design | api-design.md | API design principles |
 
 ## Usage
 
@@ -49,9 +45,7 @@ Add to AGENTS.md:
 
 ```markdown
 ---
-name: my-rule
-description: Does something important
-priority: high
+name: my-rule\ndescription: Does something important\npriority: high
 ---
 ```
 
