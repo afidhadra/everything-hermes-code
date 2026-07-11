@@ -4,7 +4,7 @@ Best practices for Go development.
 
 ## Project Structure
 
-```
+```text
 project/
 ├── cmd/            # Entry points
 │   └── app/
@@ -17,11 +17,12 @@ project/
 ├── api/            # API definitions
 ├── configs/        # Configuration files
 └── scripts/        # Build scripts
-```
+```text
 
 ## Code Style
 
 ### Error Handling
+
 ```go
 // Always handle errors explicitly
 result, err := doSomething()
@@ -31,9 +32,10 @@ if err != nil {
 
 // Don't ignore errors
 _ = doSomething() // Bad
-```
+```text
 
 ### Naming Conventions
+
 ```go
 // Use short, clear names
 func GetUser(id int) (*User, error) {}  // Good
@@ -43,9 +45,10 @@ func GetUserByID(id int) (*User, error) {}  // Also good
 type Reader interface {
     Read(p []byte) (n int, err error)
 }
-```
+```text
 
 ### Testing
+
 ```go
 // Table-driven tests
 func TestAdd(t *testing.T) {
@@ -69,11 +72,12 @@ func TestAdd(t *testing.T) {
         })
     }
 }
-```
+```text
 
 ## Best Practices
 
 ### goroutines
+
 ```go
 // Use context for cancellation
 ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -87,9 +91,10 @@ go func() {
         process(result)
     }
 }()
-```
+```text
 
 ### Channels
+
 ```go
 // Buffer channels when possible
 ch := make(chan Result, 10)
@@ -104,9 +109,10 @@ case msg := <-ch1:
 case <-ctx.Done():
     return
 }
-```
+```text
 
 ### Defer
+
 ```go
 // Defer for cleanup
 func process() error {
@@ -119,11 +125,12 @@ func process() error {
     // Process file
     return nil
 }
-```
+```text
 
 ## Common Patterns
 
 ### Repository Pattern
+
 ```go
 type UserRepository interface {
     FindByID(id int) (*User, error)
@@ -138,9 +145,10 @@ type postgresUserRepository struct {
 func (r *postgresUserRepository) FindByID(id int) (*User, error) {
     // Implementation
 }
-```
+```text
 
 ### Service Layer
+
 ```go
 type UserService struct {
     repo   UserRepository
@@ -159,11 +167,12 @@ func (s *UserService) GetUser(id int) (*User, error) {
     }
     return user, nil
 }
-```
+```text
 
 ## Tools
 
 ### Essential
+
 - `go fmt` — Format code
 - `go vet` — Static analysis
 - `golangci-lint` — Linter aggregator
@@ -171,6 +180,7 @@ func (s *UserService) GetUser(id int) (*User, error) {
 - `go mod tidy` — Clean dependencies
 
 ### Development
+
 - `air` — Live reload
 - `delve` — Debugger
 - `pprof` — Profiling

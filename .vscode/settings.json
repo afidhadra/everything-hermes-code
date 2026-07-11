@@ -1,0 +1,22 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.wordWrap": "on",
+    "editor.wordWrapColumn": 80
+  },
+  "markdownlint.config": {
+    "MD013": false,
+    "MD029": false,
+    "MD033": false,
+    "MD040": true,
+    "MD041": false,
+    "MD060": false
+  },
+  "files.associations": {
+    "*.md": "markdown"
+  },
+  "prettier.useEditorConfig": true
+}

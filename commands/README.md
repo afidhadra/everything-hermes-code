@@ -7,7 +7,7 @@ Slash commands for quick workflow switching. These are shortcuts to load specifi
 ## Available Commands
 
 | Command | Description | Agent |
-|---------|-------------|-------|
+| --------- | ------------- | ------- |
 | /code | Switch to coding mode | coder |
 | /debug | Switch to debug mode | debugger |
 | /review | Switch to review mode | reviewer |

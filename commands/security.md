@@ -4,13 +4,14 @@ Perform security vulnerability scan.
 
 ## Usage
 
-```
+```text
 /security [file-or-directory] [--deep]
-```
+```text
 
 ## Description
 
 Scans for:
+
 - Known vulnerabilities (CVE)
 - Security misconfigurations
 - Secret leaks
@@ -20,22 +21,28 @@ Scans for:
 ## Examples
 
 ```bash
+
 # Quick security scan
+
 /security
 
 # Deep scan with detailed report
+
 /security --deep
 
 # Scan specific file
+
 /security src/auth.go
 
 # Scan dependencies
+
 /security --deps
-```
+```text
 
 ## Security Checks
 
 ### Static Analysis
+
 - SQL injection
 - Command injection
 - Path traversal
@@ -43,12 +50,14 @@ Scans for:
 - CSRF protection
 
 ### Dependency Scanning
+
 - Known CVEs
 - Outdated packages
 - License compliance
 - Security advisories
 
 ### Configuration
+
 - Environment variables
 - API keys exposure
 - Debug mode enabled
@@ -57,7 +66,9 @@ Scans for:
 ## Implementation
 
 ```python
+
 # Pseudocode
+
 def security_scan(target, deep=False):
     findings = []
     
@@ -75,4 +86,4 @@ def security_scan(target, deep=False):
         findings.extend(scan_secrets(target))
     
     return generate_security_report(findings)
-```
+```text

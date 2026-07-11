@@ -4,13 +4,14 @@ Analyze code quality and provide detailed report.
 
 ## Usage
 
-```
+```text
 /analyze [file-or-directory]
-```
+```text
 
 ## Description
 
 Runs comprehensive code analysis including:
+
 - Code complexity metrics
 - Duplicate code detection
 - Technical debt assessment
@@ -20,20 +21,26 @@ Runs comprehensive code analysis including:
 ## Examples
 
 ```bash
+
 # Analyze current directory
+
 /analyze
 
 # Analyze specific file
+
 /analyze src/main.go
 
 # Analyze with SonarQube
+
 /analyze --sonar
-```
+```text
 
 ## Implementation
 
 ```python
+
 # Pseudocode
+
 def analyze(target):
     metrics = {
         'complexity': calculate_complexity(target),
@@ -42,4 +49,4 @@ def analyze(target):
         'smells': detect_code_smells(target)
     }
     return generate_report(metrics)
-```
+```text

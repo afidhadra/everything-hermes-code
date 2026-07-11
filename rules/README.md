@@ -7,7 +7,7 @@ AI rules and constraints that ensure consistent, high-quality output.
 ## Available Rules
 
 | Rule | File | Description |
-|------|------|-------------|
+| ------ | ------ | ------------- |
 | Security | security.md | Security best practices |
 | Coding Style | coding-style.md | Coding standards |
 | Testing | testing.md | Testing guidelines |
@@ -60,7 +60,7 @@ priority: high
 ## Rule Priorities
 
 | Priority | Description |
-|----------|-------------|
+| ---------- | ------------- |
 | critical | Must follow, blocks deployment |
 | high | Should follow, requires justification to skip |
 | medium | Recommended, can be relaxed if needed |

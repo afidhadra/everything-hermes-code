@@ -7,7 +7,7 @@ Reusable knowledge base for AI agents. Skills provide specific domain expertise.
 ## Available Skills
 
 | Skill | File | Description |
-|-------|------|-------------|
+| ------- | ------ | ------------- |
 | Coding Standards | coding-standards.md | Language-specific standards |
 | Backend Patterns | backend-patterns.md | Backend architecture |
 | Frontend Patterns | frontend-patterns.md | Frontend architecture |

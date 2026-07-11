@@ -7,7 +7,7 @@ Automation and setup scripts for quick configuration.
 ## Available Scripts
 
 | Script | Description |
-|--------|-------------|
+| -------- | ------------- |
 | prompt.sh | Switch prompt mode (bash) |
 | prompt.fish | Switch prompt mode (fish) |
 | setup.sh | Setup project for Hermes |

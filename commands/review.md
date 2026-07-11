@@ -4,13 +4,14 @@ Perform comprehensive code review.
 
 ## Usage
 
-```
+```text
 /review [file-or-directory] [--focus security|performance|style]
-```
+```text
 
 ## Description
 
 Reviews code for:
+
 - Code quality and best practices
 - Security vulnerabilities
 - Performance issues
@@ -20,22 +21,28 @@ Reviews code for:
 ## Examples
 
 ```bash
+
 # Review current changes
+
 /review
 
 # Review specific file
+
 /review src/main.go
 
 # Focus on security only
+
 /review --focus security
 
 # Review with SonarQube integration
+
 /review --sonar
-```
+```text
 
 ## Review Checklist
 
 ### Security
+
 - [ ] Input validation
 - [ ] SQL injection prevention
 - [ ] XSS protection
@@ -43,6 +50,7 @@ Reviews code for:
 - [ ] Secrets management
 
 ### Performance
+
 - [ ] Algorithm complexity
 - [ ] Memory usage
 - [ ] Database queries
@@ -50,6 +58,7 @@ Reviews code for:
 - [ ] Async operations
 
 ### Style
+
 - [ ] Naming conventions
 - [ ] Code organization
 - [ ] Comments/documentation
@@ -59,7 +68,9 @@ Reviews code for:
 ## Implementation
 
 ```python
+
 # Pseudocode
+
 def review(target, focus=None):
     results = {
         'security': security_review(target),
@@ -71,4 +82,4 @@ def review(target, focus=None):
     if focus:
         return results[focus]
     return generate_review_report(results)
-```
+```text

@@ -7,7 +7,7 @@ Specialized AI agents for different development tasks. Each agent has a specific
 ## Available Agents
 
 | Agent | File | Purpose |
-|-------|------|---------|
+| ------- | ------ | --------- |
 | coder | coder.md | Write production-ready code |
 | debugger | debugger.md | Find and fix bugs |
 | reviewer | reviewer.md | Code review and security |
@@ -65,7 +65,7 @@ permissions:
 ## Agent Permissions
 
 | Permission | Description |
-|------------|-------------|
+| ------------ | ------------- |
 | edit | Can modify files |
 | bash | Can run shell commands |
 | read | Can read files |

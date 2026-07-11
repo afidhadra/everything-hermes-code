@@ -7,7 +7,7 @@ MCP server configurations for Hermes and OpenCode.
 ## Available Configs
 
 | Config | File | Description |
-|--------|------|-------------|
+| -------- | ------ | ------------- |
 | GitHub | github.yaml | GitHub integration |
 | Ogham | ogham.yaml | Persistent memory |
 | Context7 | context7.yaml | Documentation lookup |
@@ -57,7 +57,7 @@ type: stdio
 ## MCP Server Types
 
 | Type | Description |
-|------|-------------|
+| ------ | ------------- |
 | stdio | Standard input/output |
 | http | HTTP server |
 | sse | Server-sent events |

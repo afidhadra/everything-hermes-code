@@ -9,7 +9,7 @@ Inspired by [Everything Claude Code](https://github.com/WorldFlowAI/everything-c
 ## Features
 
 | Component | Count | Description |
-|-----------|-------|-------------|
+| ----------- | ------- | ------------- |
 | Agents | 9 | Specialized AI agents for different tasks |
 | Commands | 4 | Slash commands for quick workflows |
 | Rules | 5 | AI rules and constraints |
@@ -34,7 +34,7 @@ everything-hermes-code/
 ├── examples/         # Example setups
 ├── .github/          # GitHub Copilot instructions
 └── README.md
-```
+```text
 
 ## Quick Start
 
@@ -42,34 +42,40 @@ everything-hermes-code/
 
 ```bash
 git clone https://github.com/afidhadra/everything-hermes-code.git ~/Projects/everything-hermes-code
-```
+```text
 
 ### 2. Setup
 
 ```bash
+
 # Copy prompts to Hermes
+
 cp -r prompts/* ~/.hermes/prompts/
 
 # Or set system prompt
+
 export HERMES_EPHEMERAL_SYSTEM_PROMPT="$(cat ~/Projects/everything-hermes-code/prompts/coding.md)"
-```
+```text
 
 ### 3. Use
 
 ```bash
+
 # Switch mode
+
 source ~/Projects/everything-hermes-code/scripts/prompt.sh coding
 
 # Or in fish
+
 source ~/Projects/everything-hermes-code/scripts/prompt.fish coding
-```
+```text
 
 ## Components
 
 ### Agents
 
 | Agent | Purpose |
-|-------|---------|
+| ------- | --------- |
 | coder | Write production-ready code |
 | debugger | Find and fix bugs |
 | reviewer | Code review and security |
@@ -83,7 +89,7 @@ source ~/Projects/everything-hermes-code/scripts/prompt.fish coding
 ### Commands
 
 | Command | Description |
-|---------|-------------|
+| --------- | ------------- |
 | /analyze | Analyze code quality and metrics |
 | /fix | Auto-fix linting and formatting issues |
 | /review | Comprehensive code review |
@@ -92,7 +98,7 @@ source ~/Projects/everything-hermes-code/scripts/prompt.fish coding
 ### Skills
 
 | Skill | Description |
-|-------|-------------|
+| ------- | ------------- |
 | go-development | Go best practices and patterns |
 | vue-development | Vue 3/TypeScript best practices |
 | docker-workflow | Docker development workflow |
@@ -129,7 +135,7 @@ sonarqube:
   type: stdio
   command: /home/afidhadra/.local/bin/sonarqube-mcp-wrapper.sh
   timeout: 30000
-```
+```text
 
 - Server: http://localhost:9000
 - Version: 26.7.0 (Community Edition)

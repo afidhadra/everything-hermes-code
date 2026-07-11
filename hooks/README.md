@@ -7,7 +7,7 @@ Pre/Post execution hooks for automation. Hooks run before or after AI actions.
 ## Available Hooks
 
 | Hook | Type | Description |
-|------|------|-------------|
+| ------ | ------ | ------------- |
 | PreToolUse | Pre | Validate before tool execution |
 | PostToolUse | Post | Process after tool execution |
 | Stop | Post | Cleanup when AI stops |
@@ -67,7 +67,7 @@ tool: bash
 ## Hook Types
 
 | Type | Description |
-|------|-------------|
+| ------ | ------------- |
 | pre | Runs before action |
 | post | Runs after action |
 

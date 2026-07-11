@@ -1,9 +1,18 @@
 #!/usr/bin/env python3
-"""Fix all markdownlint warnings in a directory."""
+"""
+Enhanced markdownlint auto-fixer.
+Fixes: MD022, MD029, MD031, MD032, MD040, MD047, MD060, MD010
+Usage: python3 fix-markdown.py [directory]
+"""
 
 import re
 import sys
 from pathlib import Path
+
+
+def fix_md010(content: str) -> str:
+    """No hard tabs — replace tabs with spaces."""
+    return content.replace("\t", "  ")
 
 
 def fix_md022(content: str) -> str:
@@ -52,9 +61,9 @@ def fix_md032(content: str) -> str:
     lines = content.split("\n")
     result = []
     for i, line in enumerate(lines):
-        is_list = re.match(r"^(\s*[-*+]|\s*\d+\.)\s", line)
-        prev_is_list = bool(result) and re.match(
-            r"^(\s*[-*+]|\s*\d+\.)\s", result[-1]
+        is_list = bool(re.match(r"^(\s*[-*+]|\s*\d+\.)\s", line))
+        prev_is_list = bool(result) and bool(
+            re.match(r"^(\s*[-*+]|\s*\d+\.)\s", result[-1])
         )
         if is_list and not prev_is_list:
             if result and result[-1].strip() != "":
@@ -86,8 +95,7 @@ def fix_md040(content: str) -> str:
 
 def fix_md047(content: str) -> str:
     """Files should end with a single newline character."""
-    content = content.rstrip("\n") + "\n"
-    return content
+    return content.rstrip("\n") + "\n"
 
 
 def fix_md060(content: str) -> str:
@@ -113,7 +121,7 @@ def fix_md029(content: str) -> str:
         m = re.match(r"^(\s*)(\d+)\.\s", line)
         if m:
             indent = m.group(1)
-            rest = line[m.end(0) :]
+            rest = line[m.end(0):]
             result.append(f"{indent}1. {rest}")
         else:
             result.append(line)
@@ -125,12 +133,14 @@ def fix_file(filepath: Path) -> int:
     original = filepath.read_text(encoding="utf-8")
     content = original
 
+    content = fix_md010(content)
     content = fix_md022(content)
     content = fix_md031(content)
     content = fix_md032(content)
     content = fix_md040(content)
     content = fix_md047(content)
     content = fix_md029(content)
+    content = fix_md060(content)
 
     if content != original:
         filepath.write_text(content, encoding="utf-8")

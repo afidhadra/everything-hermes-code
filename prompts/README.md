@@ -7,7 +7,7 @@ System prompts for different modes. These define how the AI should behave.
 ## Available Prompts
 
 | Prompt | File | Description |
-|--------|------|-------------|
+| -------- | ------ | ------------- |
 | Coding | coding.md | Write production-ready code |
 | Debug | debug.md | Find and fix bugs |
 | Review | review.md | Code review and security |

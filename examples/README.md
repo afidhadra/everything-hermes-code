@@ -7,7 +7,7 @@ Example setups and configurations.
 ## Available Examples
 
 | Example | Directory | Description |
-|---------|-----------|-------------|
+| --------- | ----------- | ------------- |
 | Basic Setup | basic/ | Minimal configuration |
 | Full Setup | full/ | Complete configuration |
 | Project Setup | project/ | Per-project configuration |

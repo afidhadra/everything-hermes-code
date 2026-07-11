@@ -4,7 +4,7 @@ Best practices for Vue 3 with TypeScript.
 
 ## Project Structure
 
-```
+```text
 src/
 ├── assets/          # Static files
 ├── components/      # Reusable components
@@ -16,11 +16,12 @@ src/
 ├── stores/          # Pinia stores
 ├── types/           # TypeScript types
 └── utils/           # Utility functions
-```
+```text
 
 ## Composition API
 
 ### Setup Script
+
 ```vue
 <script setup lang="ts">
 // Props with type safety
@@ -59,9 +60,10 @@ onMounted(() => {
   console.log('Component mounted')
 })
 </script>
-```
+```text
 
 ### Composables
+
 ```typescript
 // composables/useCounter.ts
 export function useCounter(initialValue = 0) {
@@ -89,11 +91,12 @@ export function useCounter(initialValue = 0) {
 
 // Usage in component
 const { count, increment } = useCounter(10)
-```
+```text
 
 ## Pinia Stores
 
 ### Setup Store
+
 ```typescript
 // stores/user.ts
 export const useUserStore = defineStore('user', () => {
@@ -132,11 +135,12 @@ export const useUserStore = defineStore('user', () => {
     logout
   }
 })
-```
+```text
 
 ## TypeScript Integration
 
 ### Type Definitions
+
 ```typescript
 // types/index.ts
 export interface User {
@@ -156,9 +160,10 @@ export interface ApiResponse<T> {
 export type LoginCredentials = Pick<User, 'email'> & {
   password: string
 }
-```
+```text
 
 ### Props Types
+
 ```typescript
 // Component props with TypeScript
 interface ButtonProps {
@@ -174,11 +179,12 @@ const props = withDefaults(defineProps<ButtonProps>(), {
   disabled: false,
   loading: false
 })
-```
+```text
 
 ## Best Practices
 
 ### Component Design
+
 ```vue
 <template>
   <!-- Use kebab-case for components -->
@@ -198,9 +204,10 @@ const props = withDefaults(defineProps<ButtonProps>(), {
 /* Use scoped styles */
 /* Follow BEM naming convention */
 </style>
-```
+```text
 
 ### Performance
+
 ```typescript
 // Lazy loading components
 const HeavyComponent = defineAsyncComponent(() =>
@@ -216,11 +223,12 @@ import { useDebounceFn } from '@vueuse/core'
 const debouncedSearch = useDebounceFn((query: string) => {
   search(query)
 }, 300)
-```
+```text
 
 ## Tools
 
 ### Essential
+
 - `vue-tsc` — TypeScript checker
 - `eslint` — Linting
 - `prettier` — Formatting
@@ -228,6 +236,7 @@ const debouncedSearch = useDebounceFn((query: string) => {
 - `playwright` — E2E testing
 
 ### Development
+
 - `vite` — Build tool
 - `unplugin-auto-import` — Auto imports
 - `unplugin-vue-components` — Auto components
