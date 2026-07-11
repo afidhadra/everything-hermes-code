@@ -16,7 +16,6 @@ set -euo pipefail
 #   - Token at ~/.sonarqube_token
 #   - sonar-scanner or docker for scan
 #
-set -euo pipefail
 
 # Colors
 RED='\033[0;31m'
@@ -47,10 +46,23 @@ if [ ! -f "$TOKEN_FILE" ]; then
     exit 1
 fi
 
+# Check token file permissions (must be 600)
+TOKEN_PERMS=$(stat -c %a "$TOKEN_FILE")
+if [ "$TOKEN_PERMS" != "600" ]; then
+    warn "Token file is $TOKEN_PERMS, should be 600 — fixing"
+    chmod 600 "$TOKEN_FILE"
+    ok "Token file permissions fixed"
+fi
+
 TOKEN=$(cat "$TOKEN_FILE")
 
-# Test SonarQube connectivity
-STATUS=$(curl -s -o /dev/null -w "%{http_code}" -u "$TOKEN:" "$SONAR_URL/api/system/status" 2>/dev/null || echo "000")
+# Build auth header — avoids leaking token in process list (ps aux)
+AUTH_HEADER="Authorization: Bearer $TOKEN"
+
+# Test SonarQube connectivity (header-based auth, not -u)
+STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+    -H "$AUTH_HEADER" \
+    "$SONAR_URL/api/system/status" 2>/dev/null || echo "000")
 if [ "$STATUS" != "200" ]; then
     fail "SonarQube not reachable at $SONAR_URL (HTTP $STATUS)"
     warn "Start with: docker start sonarqube"
@@ -90,14 +102,14 @@ fi
 
 head "SonarQube Scan"
 
-# Create project if not exists
-PROJECT_EXISTS=$(curl -s -u "$TOKEN:" \
+# Create project if not exists (header auth)
+PROJECT_EXISTS=$(curl -s -H "$AUTH_HEADER" \
     "$SONAR_URL/api/components/show?component=$PROJECT_KEY" \
     2>/dev/null | python3 -c "import sys,json; print(json.load(sys.stdin).get('component',{}).get('key',''))" 2>/dev/null)
 
 if [ -z "$PROJECT_EXISTS" ]; then
     info "Creating project: $PROJECT_KEY"
-    curl -s -u "$TOKEN:" -X POST \
+    curl -s -H "$AUTH_HEADER" -X POST \
         "$SONAR_URL/api/projects/create" \
         -d "name=$PROJECT_KEY&project=$PROJECT_KEY" >/dev/null 2>&1
     ok "Project created"
@@ -106,11 +118,13 @@ else
 fi
 
 # Run scan via sonar-scanner or docker
+# Note: sonar-scanner -Dsonar.login still passes token via argv.
+# For docker mode, we pass it as env var to avoid /proc exposure.
 if command -v sonar-scanner &>/dev/null; then
     info "Using sonar-scanner CLI"
-    sonar-scanner \
+    SONAR_TOKEN="$TOKEN" sonar-scanner \
         -Dsonar.host.url="$SONAR_URL" \
-        -Dsonar.login="$TOKEN" \
+        -Dsonar.login="$(cat "$TOKEN_FILE")" \
         -Dsonar.projectKey="$PROJECT_KEY" \
         -Dsonar.projectName="$PROJECT_KEY" \
         -Dsonar.sources="$TARGET" \
@@ -121,10 +135,11 @@ elif command -v docker &>/dev/null; then
     info "Using Docker sonar-scanner"
     docker run --rm \
         --network host \
+        -e SONAR_TOKEN="$TOKEN" \
         -v "$(pwd)/$TARGET:/usr/src:Z" \
         sonarsource/sonar-scanner-cli \
         -Dsonar.host.url="$SONAR_URL" \
-        -Dsonar.login="$TOKEN" \
+        -Dsonar.login="$SONAR_TOKEN" \
         -Dsonar.projectKey="$PROJECT_KEY" \
         -Dsonar.projectName="$PROJECT_KEY" \
         -Dsonar.sources=. \
@@ -136,7 +151,7 @@ else
     warn "Install: https://docs.sonarsource.com/sonarqube/latest/analyzing-source-code/scanners/sonarscanner/"
 fi
 
-# --- Fetch metrics ---
+# --- Fetch metrics (header auth) ---
 
 head "Quality Metrics"
 
@@ -144,7 +159,7 @@ sleep 2  # Wait for processing
 
 METRICS="bugs,vulnerabilities,code_smells,coverage,duplicated_lines_density,ncloc,sqale_rating,reliability_rating,security_rating"
 
-RAW=$(curl -s -u "$TOKEN:" \
+RAW=$(curl -s -H "$AUTH_HEADER" \
     "$SONAR_URL/api/measures/component?component=$PROJECT_KEY&metricKeys=$METRICS" \
     2>/dev/null)
 

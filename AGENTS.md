@@ -59,7 +59,7 @@ make clean     # remove cache files
 ## MCP Servers
 
 - **SonarQube:** localhost:9000, token at `~/.sonarqube_token`, Community Edition
-- **GitHub:** `/home/afidhadra/go/bin/github-mcp-server`, token from env `GITHUB_TOKEN`
+- **GitHub:** `~/go/bin/github-mcp-server`, token from env `GITHUB_TOKEN`
 
 ## Environment
 

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { execFileSync } = require('child_process');
 
 /**
  * Everything Hermes Code - Hook System
@@ -46,7 +46,8 @@ function executeHook(hook) {
 
   try {
     console.log(`🔍 Running ${hook.name} hook...`);
-    execSync(`bash "${scriptPath}"`, { 
+    // Use execFileSync (array form) to prevent shell injection
+    execFileSync('bash', [scriptPath], {
       stdio: 'inherit',
       cwd: process.cwd()
     });

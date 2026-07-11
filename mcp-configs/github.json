@@ -1,7 +1,7 @@
 {
   "github": {
     "type": "stdio",
-    "command": "/home/afidhadra/go/bin/github-mcp-server",
+    "command": "${HOME}/go/bin/github-mcp-server",
     "args": ["stdio"],
     "env": {
       "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"

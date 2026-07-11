@@ -297,6 +297,7 @@ def run_agent_subprocess(
     task: str,
     analysis: TaskAnalysis,
     use_worktree: bool = True,
+    yolo: bool = False,
 ) -> dict:
     """
     Run a single agent as a Hermes subprocess.
@@ -308,8 +309,11 @@ def run_agent_subprocess(
     cmd = [
         HERMES_CMD,
         "-z", prompt,
-        "--yolo",
     ]
+
+    # Only use --yolo when explicitly requested (auto-approve all tool calls)
+    if yolo:
+        cmd.append("--yolo")
 
     if use_worktree:
         cmd.append("--worktree")
@@ -363,17 +367,23 @@ def run_agents_parallel(
     task: str,
     analysis: TaskAnalysis,
     max_parallel: int = MAX_PARALLEL,
+    yolo: bool = False,
 ) -> list[dict]:
     """Run multiple agents in parallel and return results."""
     results = []
 
-    print(f"\n🚀 Spawning {len(agents)} agent(s) "
-          f"(max {max_parallel} parallel)...\n")
+    if yolo:
+        print(f"\n🚀 Spawning {len(agents)} agent(s) "
+              f"(max {max_parallel} parallel, --yolo)... \n")
+    else:
+        print(f"\n🚀 Spawning {len(agents)} agent(s) "
+              f"(max {max_parallel} parallel)... \n")
 
     with ThreadPoolExecutor(max_workers=max_parallel) as executor:
         future_map = {
             executor.submit(
-                run_agent_subprocess, agent, task, analysis
+                run_agent_subprocess, agent, task, analysis,
+                True, yolo
             ): agent
             for agent in agents
         }
@@ -412,6 +422,7 @@ def run_agents_sequential(
     agents: list[str],
     task: str,
     analysis: TaskAnalysis,
+    yolo: bool = False,
 ) -> list[dict]:
     """Run agents one by one."""
     results = []
@@ -419,7 +430,7 @@ def run_agents_sequential(
 
     for agent in agents:
         result = run_agent_subprocess(
-            agent, task, analysis, use_worktree=False
+            agent, task, analysis, use_worktree=False, yolo=yolo
         )
         results.append(result)
         status_icon = {
@@ -533,6 +544,11 @@ def main():
         action="store_true",
         help="Disable git worktree isolation"
     )
+    parser.add_argument(
+        "--yes",
+        action="store_true",
+        help="Allow --yolo on spawned agents (auto-approve all tool calls)"
+    )
     args = parser.parse_args()
 
     task = " ".join(args.task)
@@ -571,11 +587,12 @@ def main():
     # --- Execute ---
     if args.sequential:
         results = run_agents_sequential(
-            analysis.agents, task, analysis
+            analysis.agents, task, analysis, yolo=args.yes
         )
     else:
         results = run_agents_parallel(
-            analysis.agents, task, analysis, args.max_parallel
+            analysis.agents, task, analysis, args.max_parallel,
+            yolo=args.yes
         )
 
     # --- Aggregate ---
