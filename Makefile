@@ -67,6 +67,16 @@ status:
 	@python3 scripts/deploy.py --status
 	@echo ">>> Done"
 
+repos:
+	@echo ">>> Multi-repo status..."
+	@python3 scripts/repo-status.py
+	@echo ">>> Done"
+
+docker-check:
+	@echo ">>> Docker health..."
+	@python3 scripts/docker-check.py
+	@echo ">>> Done"
+
 clean:
 	@echo ">>> Cleaning..."
 	@find . -name "__pycache__" -not -path "./.git/*" -type d -exec rm -rf {} + 2>/dev/null || true
