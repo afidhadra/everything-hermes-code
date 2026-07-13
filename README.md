@@ -2,7 +2,7 @@
 
 CLI toolkit + Hermes Agent skills untuk development workflow — orchestrator, agent router, MCP manager, deploy coordinator, PR review, dan container monitoring.
 
-```
+```text
 ╭──────────────────────────────────────────────╮
 │  188 tests · 15 scripts · 6 Hermes skills    │
 │  CI/CD: GitHub Actions (3 Python versions)   │
@@ -12,25 +12,32 @@ CLI toolkit + Hermes Agent skills untuk development workflow — orchestrator, a
 ## Quick Start
 
 ```bash
+
 # 1. Install dependencies
+
 pip install pyyaml pytest rich
 
 # 2. Copy config template
+
 cp .ehc.yaml.example .ehc.yaml
+
 # lalu edit isinya sesuai project lo
 
 # 3. Coba tools
+
 python3 scripts/docker-check.py    # docker health
 python3 scripts/ehc.py             # unified dashboard
 python3 scripts/orchestrator.py --help  # orchestration
 
 # 4. Install Hermes skills (optional, recommended)
+
 make install-skills
 ```
 
 ## Tools
 
 ### Orchestrator — Plan-First AI Agent Execution
+
 `scripts/orchestrator.py`
 
 Multi-agent pipeline: Analyze task → Generate plan → Human review → Execute agents → Aggregate report.
@@ -42,6 +49,7 @@ python3 orchestrator.py --dry-run "Fix login bug"
 ```
 
 ### Agent Router — Smart Agent Recommendation
+
 `scripts/agent-router.py`
 
 Weighted scoring engine berbasis YAML config. Stemming-aware keyword matching.
@@ -53,6 +61,7 @@ python3 agent-router.py --list-agents
 ```
 
 ### PR Review Bot — Automated Code Review
+
 `scripts/pr-review.py`
 
 Scan PR diff untuk hardcoded secrets, SQL injection, code quality, dependency changes.
@@ -64,6 +73,7 @@ python3 pr-review.py --pr 5 --dry-run --json   # preview
 ```
 
 ### MCP Manager — Server Discovery & Registry
+
 `scripts/mcp-manager.py`
 
 Auto-detect MCP servers dari Docker, binaries, dan Hermes config.
@@ -75,6 +85,7 @@ python3 mcp-manager.py generate # generate configs
 ```
 
 ### Deploy Coordinator — Multi-Repo Deploy
+
 `scripts/deploy.py`
 
 Deploy BE + FE dengan pre-deploy checks dan health verification.
@@ -86,6 +97,7 @@ python3 deploy.py --deploy be        # backend only
 ```
 
 ### Docker Check — Container Health Monitor
+
 `scripts/docker-check.py`
 
 Monitor containers, health endpoints, auto-restart.
@@ -97,6 +109,7 @@ python3 docker-check.py --watch
 ```
 
 ### Task Manager — Background Jobs + TUI
+
 `scripts/task-worker.py` + `scripts/tui.py`
 
 Background agent execution dengan live dashboard.
@@ -108,6 +121,7 @@ python3 orchestrator.py --history            # all tasks
 ```
 
 ### Unified Dashboard — All Status in One Screen
+
 `scripts/ehc.py`
 
 ```bash
@@ -131,7 +145,9 @@ Atau install permanent:
 
 ```bash
 make install-skills
+
 # lalu panggil tanpa --skills path:
+
 hermes -z "orchestrate: refactor auth" --skills orchestrator
 ```
 
@@ -181,7 +197,7 @@ GitHub Actions otomatis jalan di setiap push ke `development` / `main`:
 
 ## Project Structure
 
-```
+```text
 ├── scripts/              # 15 Python tools
 ├── skills/               # 6 Hermes skill wrappers
 ├── config/               # routing.yaml
@@ -199,7 +215,7 @@ GitHub Actions otomatis jalan di setiap push ke `development` / `main`:
 ## Requirements
 
 | Dependency | Untuk |
-|-----------|-------|
+| ----------- | ------- |
 | Python 3.11+ | Semua tools |
 | PyYAML | Config parsing, routing YAML |
 | Rich | TUI dashboard (optional) |

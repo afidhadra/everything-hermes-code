@@ -41,7 +41,7 @@ background task manager, and TUI dashboard. Local-only personal tool.
 
 <!-- SCRIPTS:START -->
 | Script | Function |
-|--------|----------|
+| -------- | ---------- |
 | `agent-router.py` | Smart Agent Router — intelligent agent recommendation engine. |
 | `agent-runner.py` | Agent Runner - Execute AI agents for specific tasks. |
 | `command-runner.py` | Command Runner - Execute slash commands. |
@@ -107,6 +107,7 @@ Routing config at `config/routing.yaml` — edit scoring rules without touching 
 1. Run `make test` before every commit (pre-commit hook auto-fixes markdown)
 1. Pre-push hook runs regression analysis
 1. CI/CD runs <!-- TESTS:START -->
+
 222 passed · 7 skipped
 <!-- TESTS:END --> on push (3 Python versions)
 
