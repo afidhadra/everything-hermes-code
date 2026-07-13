@@ -8,7 +8,7 @@ A developer toolkit for Hermes Agent — 15 Python scripts, 6 Hermes skill wrapp
 config-based routing engine, MCP server manager, deploy coordinator, PR review bot,
 background task manager, and TUI dashboard. Local-only personal tool.
 
-**188 tests · 28 skipped (intentional) · CI/CD via GitHub Actions**
+> **188 tests · 28 skipped (intentional) · CI/CD via GitHub Actions**
 
 ## Tech Stack
 
@@ -21,7 +21,7 @@ background task manager, and TUI dashboard. Local-only personal tool.
 
 ## Project Structure
 
-```
+```text
 ├── scripts/          15 Python tools (orchestrator, agent-router, pr-review, ...)
 ├── skills/           6 Hermes skill wrappers + 5 tech guides
 ├── config/           routing.yaml (scoring) + agent-capabilities.yaml
