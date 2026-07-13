@@ -14,7 +14,8 @@
 #   setup     — full first-run setup (check + permissions + hooks)
 #   help      — show this help
 
-.PHONY: lint test hooks check analyze clean setup help
+.PHONY: lint test hooks check analyze clean setup help \
+        dashboard status repos docker-check install-skills
 
 PYTHON  := python3
 FIX_MD  := scripts/fix-markdown.py
@@ -24,18 +25,19 @@ help:
 	@echo ""
 	@echo "Usage: make [target]"
 	@echo ""
-	@echo "  dashboard  Show unified status (docker + repos + health)"
-	@echo "  status     Deploy status (BE + FE)"
-	@echo "  repos      Multi-repo git status"
-	@echo "  docker-check  Docker health check"
-	@echo "  lint       Fix markdown formatting"
-	@echo "  test       Run unit tests"
-	@echo "  hooks      Install git hooks"
-	@echo "  check      Check dependencies"
-	@echo "  analyze    Run SonarQube analysis"
-	@echo "  clean      Remove cache files"
-	@echo "  setup      Full setup (check + permissions + hooks)"
-	@echo "  help       Show this help"
+	@echo "  dashboard       Show unified status (docker + repos + health)"
+	@echo "  status          Deploy status (BE + FE)"
+	@echo "  repos           Multi-repo git status"
+	@echo "  docker-check    Docker health check"
+	@echo "  lint            Fix markdown formatting"
+	@echo "  test            Run unit tests"
+	@echo "  hooks           Install git hooks"
+	@echo "  check           Check dependencies"
+	@echo "  analyze         Run SonarQube analysis"
+	@echo "  clean           Remove cache files"
+	@echo "  setup           Full setup (check + permissions + hooks)"
+	@echo "  install-skills  Install Hermes skill wrappers to ~/.hermes/skills/"
+	@echo "  help            Show this help"
 	@echo ""
 
 dashboard:
@@ -93,3 +95,15 @@ setup:
 	@echo ">>> Running full setup..."
 	@./install.sh --all
 	@echo ">>> Done"
+
+install-skills:
+	@echo ">>> Installing Hermes skills..."
+	@mkdir -p ~/.hermes/skills
+	@for f in skills/*.md; do \
+	    name=$$(basename "$$f" .md); \
+	    dir=~/.hermes/skills/ehc-$$name; \
+	    mkdir -p "$$dir"; \
+	    cp "$$f" "$$dir/SKILL.md"; \
+	    echo "  ✅ Installed: ehc-$$name"; \
+	done
+	@echo ">>> Done. Load via: hermes --skills ehc-<name>"

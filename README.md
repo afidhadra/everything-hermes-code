@@ -1,162 +1,211 @@
 # Everything Hermes Code
 
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+CLI toolkit + Hermes Agent skills untuk development workflow — orchestrator, agent router, MCP manager, deploy coordinator, PR review, dan container monitoring.
 
-**Claude Code-style toolkit for Hermes Agent**
-
-Complete AI development workflow for Hermes + Big Pickle (GLM-4.6) — agents, commands, skills, rules, hooks, prompts, and MCP configs.
-
-Inspired by [Everything Claude Code](https://github.com/WorldFlowAI/everything-claude-code).
-
-## Features
-
-| Component | Count | Description |
-| ----------- | ------- | ------------- |
-| Agents | 9 | Specialized AI agents for different tasks |
-| Commands | 4 | Slash commands for quick workflows |
-| Rules | 5 | AI rules and constraints |
-| Skills | 4 | Reusable knowledge base |
-| Hooks | 1 | Pre/Post execution automation |
-| Prompts | 4 | System prompts for different modes |
-| MCP Configs | 1 | Server configurations (SonarQube) |
-| Scripts | 1 | Automation scripts |
-
-## Directory Structure
-
-```text
-everything-hermes-code/
-├── agents/           # Specialized AI agents
-├── commands/         # Slash commands
-├── rules/            # AI rules & constraints
-├── skills/           # Reusable knowledge
-├── hooks/            # Pre/Post execution hooks
-├── prompts/          # System prompts (coding, debug, review, analysis)
-├── scripts/          # Automation scripts
-├── mcp-configs/      # MCP server configs
-├── examples/         # Example setups
-├── .github/          # GitHub Copilot instructions
-└── README.md
+```
+╭──────────────────────────────────────────────╮
+│  188 tests · 15 scripts · 6 Hermes skills    │
+│  CI/CD: GitHub Actions (3 Python versions)   │
+╰──────────────────────────────────────────────╯
 ```
 
 ## Quick Start
 
-### 1. Install
-
 ```bash
-git clone https://github.com/afidhadra/everything-hermes-code.git ~/Projects/everything-hermes-code
+# 1. Install dependencies
+pip install pyyaml pytest rich
+
+# 2. Copy config template
+cp .ehc.yaml.example .ehc.yaml
+# lalu edit isinya sesuai project lo
+
+# 3. Coba tools
+python3 scripts/docker-check.py    # docker health
+python3 scripts/ehc.py             # unified dashboard
+python3 scripts/orchestrator.py --help  # orchestration
+
+# 4. Install Hermes skills (optional, recommended)
+make install-skills
 ```
 
-### 2. Setup
+## Tools
+
+### Orchestrator — Plan-First AI Agent Execution
+`scripts/orchestrator.py`
+
+Multi-agent pipeline: Analyze task → Generate plan → Human review → Execute agents → Aggregate report.
 
 ```bash
-
-# Copy prompts to Hermes
-
-cp -r prompts/* ~/.hermes/prompts/
-
-# Or set system prompt
-
-export HERMES_EPHEMERAL_SYSTEM_PROMPT="$(cat ~/Projects/everything-hermes-code/prompts/coding.md)"
+python3 orchestrator.py "Refactor auth module"
+python3 orchestrator.py --plan-only "Add login feature"
+python3 orchestrator.py --dry-run "Fix login bug"
 ```
 
-### 3. Use
+### Agent Router — Smart Agent Recommendation
+`scripts/agent-router.py`
+
+Weighted scoring engine berbasis YAML config. Stemming-aware keyword matching.
 
 ```bash
-
-# Switch mode
-
-source ~/Projects/everything-hermes-code/scripts/prompt.sh coding
-
-# Or in fish
-
-source ~/Projects/everything-hermes-code/scripts/prompt.fish coding
+python3 agent-router.py "Fix authentication bug"
+python3 agent-router.py "Add login page" --json
+python3 agent-router.py --list-agents
 ```
 
-## Components
+### PR Review Bot — Automated Code Review
+`scripts/pr-review.py`
 
-### Agents
+Scan PR diff untuk hardcoded secrets, SQL injection, code quality, dependency changes.
 
-| Agent | Purpose |
-| ------- | --------- |
-| coder | Write production-ready code |
-| debugger | Find and fix bugs |
-| reviewer | Code review and security |
-| architect | System design and architecture |
-| planner | Project planning and breakdown |
-| tdd-guide | Test-driven development |
-| documenter | Documentation generation |
-| optimizer | Performance optimization |
-| security | Security audit and hardening |
+```bash
+python3 pr-review.py --pr 5                    # review PR #5
+python3 pr-review.py --all-open                # semua open PR
+python3 pr-review.py --pr 5 --dry-run --json   # preview
+```
 
-### Commands
+### MCP Manager — Server Discovery & Registry
+`scripts/mcp-manager.py`
 
-| Command | Description |
-| --------- | ------------- |
-| /analyze | Analyze code quality and metrics |
-| /fix | Auto-fix linting and formatting issues |
-| /review | Comprehensive code review |
-| /security | Security vulnerability scan |
+Auto-detect MCP servers dari Docker, binaries, dan Hermes config.
 
-### Skills
+```bash
+python3 mcp-manager.py scan     # discover
+python3 mcp-manager.py health   # check connectivity
+python3 mcp-manager.py generate # generate configs
+```
 
-| Skill | Description |
-| ------- | ------------- |
-| go-development | Go best practices and patterns |
-| vue-development | Vue 3/TypeScript best practices |
-| docker-workflow | Docker development workflow |
-| git-workflow | Git best practices and conventions |
+### Deploy Coordinator — Multi-Repo Deploy
+`scripts/deploy.py`
 
-### Rules
+Deploy BE + FE dengan pre-deploy checks dan health verification.
 
-- security.md — Security best practices
-- coding-style.md — Coding standards
-- testing.md — Testing guidelines
-- git-workflow.md — Git conventions
+```bash
+python3 deploy.py --status          # apa yang perlu dideploy
+python3 deploy.py --deploy all      # full deploy
+python3 deploy.py --deploy be        # backend only
+```
 
-### Prompts
+### Docker Check — Container Health Monitor
+`scripts/docker-check.py`
 
-- coding.md — Production-ready code generation
-- debug.md — Root cause analysis
-- review.md — Code review and security
-- analysis.md — Systems analysis
+Monitor containers, health endpoints, auto-restart.
 
-## Model
+```bash
+python3 docker-check.py              # quick check
+python3 docker-check.py --restart-dead
+python3 docker-check.py --watch
+```
 
-**Big Pickle** (GLM-4.6 via OpenCode Zen)
+### Task Manager — Background Jobs + TUI
+`scripts/task-worker.py` + `scripts/tui.py`
 
-- Context: 200K tokens
-- Max output: 128K tokens
-- Price: Free
+Background agent execution dengan live dashboard.
 
-## MCP Servers
+```bash
+python3 orchestrator.py "task" --background  # spawn
+python3 orchestrator.py --status             # live TUI
+python3 orchestrator.py --history            # all tasks
+```
 
-### SonarQube (Configured)
+### Unified Dashboard — All Status in One Screen
+`scripts/ehc.py`
+
+```bash
+python3 ehc.py            # full dashboard
+python3 ehc.py --json     # JSON output
+python3 ehc.py --watch    # auto-refresh
+```
+
+## Hermes Skills
+
+Semua tools punya Hermes skill wrapper di `skills/`. Load via:
+
+```bash
+hermes -z "orchestrate: refactor auth" --skills skills/orchestrator.md
+hermes -z "check docker health" --skills skills/docker-check.md
+hermes -z "deploy backend" --skills skills/deploy.md
+hermes -z "review PR #5" --skills skills/pr-review.md
+```
+
+Atau install permanent:
+
+```bash
+make install-skills
+# lalu panggil tanpa --skills path:
+hermes -z "orchestrate: refactor auth" --skills orchestrator
+```
+
+## Config
+
+Semua konfigurasi via `.ehc.yaml` — lihat `.ehc.yaml.example` untuk template.
 
 ```yaml
-sonarqube:
-  type: stdio
-  command: /home/afidhadra/.local/bin/sonarqube-mcp-wrapper.sh
-  timeout: 30000
+project:
+  name: MY-PROJECT
+  root: ~/Projects/my-project
+repos:
+  be:
+    name: Backend
+    dir: backend
+    lang: go
+docker:
+  containers:
+    api-dev:
+      friendly: API
+      health_url: http://localhost:8080/health
 ```
 
-- Server: http://localhost:9000
-- Version: 26.7.0 (Community Edition)
-- Token: ~/.sonarqube_token
+## Testing
 
-## Compatibility
+```bash
+make test       # pytest — 188 tests
+make lint       # markdown fix
+make check      # dependency check
+```
 
-- Hermes Agent ✓
-- OpenCode ✓
-- Claude Code (partial) ✓
-- GitHub Copilot ✓
+Atau langsung:
+
+```bash
+python3 -m pytest tests/ -v
+```
+
+## CI/CD
+
+GitHub Actions otomatis jalan di setiap push ke `development` / `main`:
+
+- Python 3.11, 3.12, 3.13 matrix
+- 188 tests
+- Coverage report
+- Script import check
+- Makefile validation
+
+## Project Structure
+
+```
+├── scripts/              # 15 Python tools
+├── skills/               # 6 Hermes skill wrappers
+├── config/               # routing.yaml
+├── tests/                # 188 tests
+├── hooks/                # git hooks
+├── agents/               # agent definitions
+├── commands/             # slash command docs
+├── rules/                # coding rules
+├── prompts/              # system prompts
+├── mcp-configs/          # MCP server configs
+├── .ehc.yaml             # project config
+└── .ehc.yaml.example     # template
+```
+
+## Requirements
+
+| Dependency | Untuk |
+|-----------|-------|
+| Python 3.11+ | Semua tools |
+| PyYAML | Config parsing, routing YAML |
+| Rich | TUI dashboard (optional) |
+| `gh` CLI | PR Review Bot (optional) |
+| Docker | Container management (optional) |
 
 ## License
 
-MIT — Use freely, modify as needed.
-
-## Credits
-
-- [Everything Claude Code](https://github.com/WorldFlowAI/everything-claude-code) — Inspiration
-- [Hermes Agent](https://github.com/NousResearch/hermes-agent) — Platform
-- [OpenCode Zen](https://opencode.ai) — Model provider
-- [SonarQube](https://www.sonarsource.com) — Code quality
+MIT
