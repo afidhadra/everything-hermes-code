@@ -1,16 +1,26 @@
 #!/usr/bin/env python3
 """
-Everything Hermes Code — Orchestration Engine
+Everything Hermes Code — Orchestration Engine with Plan-First Workflow.
 
-Analyzes task complexity, spawns parallel AI agents via Hermes CLI,
-and aggregates results.
+Analyzes task complexity, generates a detailed plan for review,
+then spawns parallel AI agents via Hermes CLI upon approval.
 
 Usage:
-    python3 orchestrator.py <task-description>
     python3 orchestrator.py "Refactor authentication module"
+    python3 orchestrator.py --plan-only "Add login feature"
+    python3 orchestrator.py --plan plan.md --auto-approve
     python3 orchestrator.py --dry-run "Fix login bug"
 
+Workflow:
+    1. Analyze  — classify task complexity, detect types, select agents
+    2. Plan     — generate structured markdown plan
+    3. Review   — show plan, wait for user approval (unless --auto-approve)
+    4. Execute  — spawn agents (parallel or sequential)
+    5. Report   — aggregate results into a summary
+
 Features:
+    - Plan-first workflow with human-in-the-loop approval
+    - Plan file save/load for async review and editing
     - Task complexity analysis (simple/medium/complex)
     - Parallel agent spawning via subprocess
     - Agent selection based on task type
@@ -43,6 +53,7 @@ REPO_DIR = Path(__file__).parent.parent
 AGENTS_DIR = REPO_DIR / "agents"
 RULES_DIR = REPO_DIR / "rules"
 SKILLS_DIR = REPO_DIR / "skills"
+REPORTS_DIR = REPO_DIR / "reports"
 
 MAX_PARALLEL = 3  # Max concurrent agents
 HERMES_CMD = "hermes"
@@ -84,6 +95,10 @@ COMPLEXITY_MARKERS = {
 }
 
 
+# ============================================================
+# Task Analysis
+# ============================================================
+
 class TaskAnalysis:
     """Result of analyzing a task."""
 
@@ -95,6 +110,7 @@ class TaskAnalysis:
         self.agents: list[str] = []
         self.reasoning: list[str] = []
         self.confidence = 0.0
+        self.estimated_minutes = 0
         self._analyze()
 
     def _analyze(self):
@@ -160,6 +176,14 @@ class TaskAnalysis:
 
         self.confidence = min(1.0, score / 10.0)
 
+        # Estimate time
+        if self.complexity == Complexity.SIMPLE:
+            self.estimated_minutes = 5
+        elif self.complexity == Complexity.MEDIUM:
+            self.estimated_minutes = 15
+        else:
+            self.estimated_minutes = 30
+
         # --- Select agents ---
         self.agents = self._select_agents()
 
@@ -199,6 +223,219 @@ class TaskAnalysis:
         if self.reasoning:
             lines.append(f"Reasoning: {'; '.join(self.reasoning)}")
         return "\n".join(lines)
+
+
+# ============================================================
+# Plan Generation  (NEW — Plan-First Workflow)
+# ============================================================
+
+def generate_plan(analysis: TaskAnalysis) -> str:
+    """Generate a structured markdown plan for the task analysis.
+
+    This plan is shown to the user for review before execution.
+    """
+    agent_descriptions = {
+        "architect": "Design system architecture and component interactions",
+        "coder": "Implement code changes with best practices",
+        "debugger": "Root cause analysis and fix implementation",
+        "reviewer": "Code quality, security, and performance review",
+        "documenter": "Documentation updates and changelog entries",
+        "optimizer": "Performance optimization and efficiency improvements",
+        "planner": "Task breakdown, timeline, and dependency analysis",
+        "security": "Vulnerability assessment and security hardening",
+        "tdd-guide": "Test-driven development with RED-GREEN-REFACTOR",
+    }
+
+    lines = [
+        "# Orchestration Plan",
+        "",
+        f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+        "",
+        "---",
+        "",
+        "## Task",
+        "",
+        f"> {analysis.task}",
+        "",
+        "## Analysis",
+        "",
+        f"| Property | Value |",
+        "|----------|-------|",
+        f"| Complexity | **{analysis.complexity.value.upper()}** |",
+        f"| Confidence | {analysis.confidence:.0%} |",
+        f"| Task Types | {', '.join(analysis.task_types)} |",
+        f"| Est. Time | ~{analysis.estimated_minutes} min |",
+        "",
+    ]
+
+    if analysis.reasoning:
+        lines.extend([
+            "### Reasoning",
+            "",
+        ])
+        for r in analysis.reasoning:
+            lines.append(f"- {r}")
+        lines.append("")
+
+    # Agent plan
+    lines.extend([
+        "## Execution Plan",
+        "",
+        f"**Mode:** parallel (max {MAX_PARALLEL} agents)",
+        "**Worktree:** enabled",
+        "",
+        "| # | Agent | Role |",
+        "|---|-------|------|",
+    ])
+    for i, agent in enumerate(analysis.agents, 1):
+        desc = agent_descriptions.get(agent, agent)
+        lines.append(f"| {i} | `{agent}` | {desc} |")
+
+    lines.extend([
+        "",
+        "## Order & Dependencies",
+        "",
+    ])
+
+    if len(analysis.agents) <= 1:
+        lines.append("Single agent — no dependencies.")
+    elif analysis.complexity == Complexity.SIMPLE:
+        lines.append("All agents can run independently in parallel.")
+    else:
+        # For complex tasks, suggest a dependency order
+        lines.append("Suggested execution order:")
+        has_architect = "architect" in analysis.agents
+        has_planner = "planner" in analysis.agents
+        has_coder = "coder" in analysis.agents
+        has_reviewer = "reviewer" in analysis.agents
+        has_security = "security" in analysis.agents
+        has_documenter = "documenter" in analysis.agents
+
+        step = 1
+        if has_architect or has_planner:
+            lines.append(f"  {step}. **Design phase:** "
+                         f"architect + planner (parallel)")
+            step += 1
+        if has_coder:
+            lines.append(f"  {step}. **Implementation:** coder, "
+                         f"optimizer, tdd-guide (parallel)")
+            step += 1
+        if has_reviewer or has_security:
+            lines.append(f"  {step}. **Review phase:** "
+                         f"reviewer + security (parallel)")
+            step += 1
+        if has_documenter:
+            lines.append(f"  {step}. **Documentation:** documenter")
+            step += 1
+        if step == 1:
+            lines.append("  All agents run in parallel (no strict deps).")
+
+    lines.extend([
+        "",
+        "---",
+        "",
+        "## Risk Assessment",
+        "",
+    ])
+
+    if analysis.complexity == Complexity.SIMPLE:
+        lines.append("✅ **Low risk** — well-defined task, single agent.")
+    elif analysis.complexity == Complexity.MEDIUM:
+        lines.append("⚠️ **Medium risk** — multiple agents involved, "
+                      "coordination needed.")
+    else:
+        lines.append("🔴 **High risk** — complex multi-agent orchestration. "
+                      "Review each agent output carefully.")
+
+    if "security" in analysis.agents:
+        lines.append("- Security implications need review")
+    if "database" in analysis.task_lower or "schema" in analysis.task_lower:
+        lines.append("- Database changes may require migration")
+    if "refactor" in analysis.task_types:
+        lines.append("- Refactoring may introduce regressions")
+
+    lines.extend([
+        "",
+        "---",
+        "",
+        "## Status",
+        "",
+        "**PENDING REVIEW**",
+        "",
+    ])
+
+    return "\n".join(lines)
+
+
+def load_plan(plan_path: Path) -> tuple[bool, str]:
+    """Load an existing plan file.
+
+    Returns (exists, content).
+    """
+    if plan_path and plan_path.exists():
+        return True, plan_path.read_text(encoding="utf-8")
+    return False, ""
+
+
+def save_plan(plan: str, path: Optional[Path] = None) -> Path:
+    """Save plan to a markdown file.
+
+    If no path given, saves to reports/plan_<timestamp>.md.
+    Returns the path.
+    """
+    if path is None:
+        REPORTS_DIR.mkdir(exist_ok=True)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        path = REPORTS_DIR / f"plan_{timestamp}.md"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(plan, encoding="utf-8")
+    return path
+
+
+def review_plan(plan: str, auto_approve: bool = False) -> bool:
+    """Show the plan and prompt the user for approval.
+
+    Returns True if approved, False if rejected.
+    If auto_approve is True, skip prompt.
+    """
+    print()
+    print("=" * 60)
+    print("  ORCHESTRATION PLAN")
+    print("=" * 60)
+    print()
+    print(plan)
+    print()
+
+    if auto_approve:
+        print("✅ Auto-approve enabled — executing plan...")
+        return True
+
+    # Interactive approval
+    try:
+        response = input(
+            "Approve and execute this plan?\n"
+            "  [Y] Yes, execute now\n"
+            "  [n] No, abort\n"
+            "  [e] Edit plan file first\n"
+            "Choice [Y/n/e]: "
+        ).strip().lower()
+    except (EOFError, KeyboardInterrupt):
+        print("\n\n⚠️  Plan review aborted.")
+        return False
+
+    if response == "e":
+        # Tell user how to edit and re-run
+        plan_path = save_plan(plan)
+        print(f"\n📝 Plan saved to: {plan_path}")
+        print(f"   Edit the file, then re-run with: --plan {plan_path}")
+        return False
+    elif response == "n" or response == "no":
+        print("\n❌ Plan rejected. Aborting.")
+        return False
+    else:
+        # Y, yes, Enter, or anything else = approve
+        print("\n✅ Plan approved. Executing...")
+        return True
 
 
 # ============================================================
@@ -510,17 +747,35 @@ def aggregate_results(results: list[dict], analysis: TaskAnalysis) -> str:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Orchestration Engine — parallel AI agent execution"
+        description="Orchestration Engine — parallel AI agent execution "
+                    "with plan-first workflow"
     )
     parser.add_argument(
         "task",
-        nargs="+",
-        help="Task description to orchestrate"
+        nargs="*",
+        help="Task description to orchestrate (not needed with --plan)"
     )
     parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Analyze task and show plan without executing agents"
+    )
+    parser.add_argument(
+        "--plan-only",
+        action="store_true",
+        help="Generate plan and save to file, then exit (no execution)"
+    )
+    parser.add_argument(
+        "--plan",
+        type=str,
+        default=None,
+        metavar="FILE",
+        help="Path to existing plan file (skips analysis, loads from file)"
+    )
+    parser.add_argument(
+        "--auto-approve",
+        action="store_true",
+        help="Skip plan review prompt — auto-approve and execute"
     )
     parser.add_argument(
         "--sequential",
@@ -551,61 +806,204 @@ def main():
     )
     args = parser.parse_args()
 
+    # ================================================================
+    # PHASE 0: Load existing plan (if --plan provided)
+    # ================================================================
+
+    if args.plan:
+        plan_path = Path(args.plan)
+        exists, plan_content = load_plan(plan_path)
+
+        if exists:
+            print()
+            print("=" * 60)
+            print("  PLAN-FIRST ORCHESTRATION")
+            print("=" * 60)
+            print(f"\n📄 Loaded plan from: {plan_path}")
+            print()
+
+            if args.dry_run:
+                print(plan_content)
+                print("\n--- End of dry run (loaded from plan file) ---")
+                return
+
+            if args.plan_only:
+                print(plan_content)
+                print(f"\n📄 Plan file: {plan_path}")
+                return
+
+            # Review the loaded plan
+            if not review_plan(plan_content, auto_approve=args.auto_approve):
+                sys.exit(1)
+
+            # Extract just the task description from the plan
+            task = ""
+            for line in plan_content.split("\n"):
+                if line.startswith("> "):
+                    task = line[2:].strip()
+                    break
+            if not task:
+                task = f"Task from plan: {plan_path.name}"
+
+            # Parse agent names from plan table
+            agents = []
+            for line in plan_content.split("\n"):
+                m = re.match(r"^\| \d+ \| `(\w[\w-]*)` \|", line)
+                if m:
+                    agents.append(m.group(1))
+            if not agents:
+                agents = ["coder"]
+
+            analysis = TaskAnalysis(task)
+            analysis.agents = agents
+
+            print(f"\n📋 Using {len(agents)} agent(s) from plan: "
+                  f"{', '.join(agents)}")
+
+        else:
+            # Plan file doesn't exist — generate and save
+            if not args.task:
+                print("❌ No task provided and no existing plan file found.")
+                print("   Provide a task or point --plan to an existing file.")
+                sys.exit(1)
+
+            task = " ".join(args.task)
+            print(f"\n📋 Analyzing task...")
+            analysis = TaskAnalysis(task)
+            plan_content = generate_plan(analysis)
+            saved = save_plan(plan_content, plan_path)
+            print(f"\n📄 New plan saved to: {saved}")
+
+            if args.dry_run:
+                print(plan_content)
+                print("\n--- End of dry run ---")
+                return
+
+            if args.plan_only:
+                print(plan_content)
+                print(f"\n📄 Plan file: {saved}")
+                print("   Edit the plan, then re-run with the same --plan flag.")
+                return
+
+            if not review_plan(plan_content, auto_approve=False):
+                sys.exit(1)
+
+            task = " ".join(args.task)
+            analysis = TaskAnalysis(task)
+            agents = analysis.agents
+
+        # --- Execute from plan ---
+        yolo_flag = args.yes
+        if args.sequential:
+            results = run_agents_sequential(
+                agents, task, analysis, yolo=yolo_flag
+            )
+        else:
+            results = run_agents_parallel(
+                agents, task, analysis, args.max_parallel,
+                yolo=yolo_flag
+            )
+
+        report = aggregate_results(results, analysis)
+        print(f"\n{report}")
+
+        save_path = args.save
+        if not save_path:
+            REPORTS_DIR.mkdir(exist_ok=True)
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            save_path = REPORTS_DIR / f"orchestration_{timestamp}.md"
+
+        Path(save_path).write_text(report, encoding="utf-8")
+        print(f"\n📄 Report saved to: {save_path}")
+        return
+
+    # ================================================================
+    # PHASE 1: Task is required for non-plan-file mode
+    # ================================================================
+
+    if not args.task:
+        parser.print_usage()
+        print("orchestrator.py: error: the following arguments are required: task")
+        print("  (or use --plan to load an existing plan file)")
+        sys.exit(2)
+
     task = " ".join(args.task)
 
     # Banner
     print()
     print("=" * 60)
-    print("  ORCHESTRATION ENGINE")
+    print("  PLAN-FIRST ORCHESTRATION")
     print("=" * 60)
 
-    # --- Analyze ---
+    # ================================================================
+    # PHASE 2: Analyze
+    # ================================================================
     print(f"\n📋 Analyzing task...")
     analysis = TaskAnalysis(task)
 
     print(f"\n{analysis.summary()}")
 
-    # --- Dry run ---
+    # ================================================================
+    # PHASE 3: Plan
+    # ================================================================
+    plan_content = generate_plan(analysis)
+
+    # Save plan to a temp path for potential editing
+    plan_save_path = save_plan(plan_content)
+
+    # ================================================================
+    # PHASE 4: Review (unless --dry-run or --plan-only)
+    # ================================================================
+
     if args.dry_run:
-        print(f"\n{'─' * 60}")
+        print()
+        print("─" * 60)
         print("DRY RUN — no agents will be spawned")
-        print(f"{'─' * 60}")
-        print(f"\nWould spawn {len(analysis.agents)} agents: "
-              f"{', '.join(analysis.agents)}")
-        print(f"Execution: "
-              f"{'sequential' if args.sequential else 'parallel'}")
-        if not args.sequential:
-            print(f"Max parallel: {args.max_parallel}")
-        print(f"\nAgent prompts:")
-        for agent in analysis.agents:
-            preview = build_agent_prompt(agent, task, analysis)
-            preview_short = preview[:200].replace("\n", " ")
-            print(f"  [{agent}]: {preview_short}...")
+        print("─" * 60)
+        print(f"\n{plan_content}")
         print("\n--- End of dry run ---")
         return
 
-    # --- Execute ---
+    if args.plan_only:
+        print()
+        print(f"\n{plan_content}")
+        print(f"\n📄 Plan saved to: {plan_save_path}")
+        print("   Edit the plan file if needed, then execute with:")
+        print(f"     python3 orchestrator.py --plan {plan_save_path}")
+        return
+
+    approved = review_plan(plan_content, auto_approve=args.auto_approve)
+    if not approved:
+        sys.exit(1)
+
+    # ================================================================
+    # PHASE 5: Execute
+    # ================================================================
+    yolo_flag = args.yes
     if args.sequential:
         results = run_agents_sequential(
-            analysis.agents, task, analysis, yolo=args.yes
+            analysis.agents, task, analysis, yolo=yolo_flag
         )
     else:
         results = run_agents_parallel(
             analysis.agents, task, analysis, args.max_parallel,
-            yolo=args.yes
+            yolo=yolo_flag
         )
 
-    # --- Aggregate ---
+    # ================================================================
+    # PHASE 6: Report
+    # ================================================================
     report = aggregate_results(results, analysis)
     print(f"\n{report}")
 
-    # --- Save ---
+    # ================================================================
+    # PHASE 7: Save
+    # ================================================================
     save_path = args.save
     if not save_path:
-        reports_dir = REPO_DIR / "reports"
-        reports_dir.mkdir(exist_ok=True)
+        REPORTS_DIR.mkdir(exist_ok=True)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        save_path = reports_dir / f"orchestration_{timestamp}.md"
+        save_path = REPORTS_DIR / f"orchestration_{timestamp}.md"
 
     Path(save_path).write_text(report, encoding="utf-8")
     print(f"\n📄 Report saved to: {save_path}")
