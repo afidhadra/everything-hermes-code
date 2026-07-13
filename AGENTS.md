@@ -9,7 +9,7 @@ A developer toolkit for Hermes Agent — 16 Python scripts, 6 Hermes skill wrapp
 config-based routing engine, MCP server manager, deploy coordinator, PR review bot,
 background task manager, and TUI dashboard. Local-only personal tool.
 
-> **222 tests · 7 skipped (intentional) · CI/CD via GitHub Actions**
+> **225 tests · 7 skipped (intentional) · CI/CD via GitHub Actions**
 <!-- SUMMARY:END -->
 
 ## Tech Stack
@@ -41,7 +41,7 @@ background task manager, and TUI dashboard. Local-only personal tool.
 
 <!-- SCRIPTS:START -->
 | Script | Function |
-| -------- | ---------- |
+|--------|----------|
 | `agent-router.py` | Smart Agent Router — intelligent agent recommendation engine. |
 | `agent-runner.py` | Agent Runner - Execute AI agents for specific tasks. |
 | `command-runner.py` | Command Runner - Execute slash commands. |
@@ -65,7 +65,7 @@ background task manager, and TUI dashboard. Local-only personal tool.
 ```bash
 make help              # show all targets
 make test              # run <!-- TESTS:START -->
-222 passed · 7 skipped
+225 passed · 7 skipped
 <!-- TESTS:END -->
 make lint              # fix markdown formatting
 make check             # check dependencies
@@ -107,8 +107,7 @@ Routing config at `config/routing.yaml` — edit scoring rules without touching 
 1. Run `make test` before every commit (pre-commit hook auto-fixes markdown)
 1. Pre-push hook runs regression analysis
 1. CI/CD runs <!-- TESTS:START -->
-
-222 passed · 7 skipped
+225 passed · 7 skipped
 <!-- TESTS:END --> on push (3 Python versions)
 
 1. Commit format: `type(scope): subject` (feat, fix, refactor, chore, docs, test)

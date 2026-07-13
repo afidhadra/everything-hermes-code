@@ -1116,7 +1116,7 @@ def main():
     
     # --- Generate report ---
     report = generate_report(changes, risks, api_contracts, db_schema,
-                             ref or "staged" if args.staged else "uncommitted")
+                             (ref or "staged") if args.staged else "uncommitted")
     print(f"\n{report}")
     
     # --- Exit code ---

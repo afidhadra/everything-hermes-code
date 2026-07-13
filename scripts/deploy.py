@@ -309,7 +309,7 @@ def deploy_repo(
 
     # Step 2: Rebuild container
     if not dry_run:
-        success, build_output = docker_compose(
+        success, build_output = docker_compose_cmd(
             compose_path, service, "build", dry_run
         )
         steps.append(f"docker build: {'OK' if success else 'FAIL'}")

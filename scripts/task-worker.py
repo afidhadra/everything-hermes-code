@@ -15,10 +15,8 @@ import os
 import subprocess
 import sys
 import time
-import signal
 from datetime import datetime
 from pathlib import Path
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # ── Paths ──────────────────────────────────────────────────────────
 
@@ -178,7 +176,7 @@ def main():
     # Write task metadata
     task_info = {
         "id": task_id,
-        "task": args.task_descs,
+        "task": args.task_desc,
         "agents": agents,
         "mode": args.mode,
         "max_parallel": args.max_parallel,
