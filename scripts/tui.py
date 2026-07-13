@@ -148,8 +148,9 @@ def build_task_table(tasks: list[dict]) -> Table:
     for t in tasks[:12]:  # max 12 rows for terminal
         tid = t.get("id", "?")
         task_str = short_task(t.get("task", ""), 26)
-        agents = t.get("total_count", t.get("agents", []))
-        agent_str = str(len(agents)) if isinstance(agents, list) else str(agents)
+        agents = t.get("agents", [])
+        n_agents = t.get("total_count", len(agents) if isinstance(agents, list) else 0)
+        agent_str = str(n_agents) if n_agents else str(len(agents)) if isinstance(agents, list) else "0"
         status = t.get("status", "unknown")
         emoji = status_emoji(status)
 
@@ -272,9 +273,10 @@ def task_detail(task_id: str):
         console.print(f"[red]Task #{task_id} not found[/]")
         return
 
-    agents = load_agents(task_id)
+    agents = load_agents(task_id) or []
     report = load_report(task_id)
 
+    console.print()
     console.print()
     console.print(build_header(f"TASK #{task_id} DETAIL"))
 
@@ -344,8 +346,11 @@ def history(limit: int = 20):
         console.print("[yellow]No tasks in history.[/]")
         return
 
-    # Sort oldest first for history
-    tasks.sort(key=lambda t: t.get("started_at", ""))
+    # Sort oldest first for history (handle None values)
+    def _sort_key(t):
+        v = t.get("started_at")
+        return v or ""
+    tasks.sort(key=_sort_key)
     tasks = tasks[-limit:]
 
     console.print()
@@ -358,15 +363,18 @@ def history(limit: int = 20):
     table.add_column("Status", width=8)
     table.add_column("Duration", width=10)
 
-    for t in tasks:
+    for t in tasks[-limit:]:
         tid = t.get("id", "?")
         task_str = short_task(t.get("task", ""), 26)
-        started = t.get("started_at", "")[:10]
+        started_raw = t.get("started_at")
+        started = started_raw[:10] if started_raw else "─"
         status = t.get("status", "?")
         emoji = status_emoji(status)
 
         dur = "─"
-        if t.get("started_at") and t.get("completed_at"):
+        s_started = t.get("started_at")
+        s_completed = t.get("completed_at")
+        if s_started and s_completed:
             try:
                 s = datetime.fromisoformat(t["started_at"])
                 c = datetime.fromisoformat(t["completed_at"])
