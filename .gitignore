@@ -11,3 +11,6 @@ __pycache__/
 venv/reports/
 .pytest_cache/
 reports/
+mcp-configs/registry.yaml
+mcp-configs/context7.json
+mcp-configs/ogham.json
