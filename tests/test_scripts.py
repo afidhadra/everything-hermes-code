@@ -50,6 +50,7 @@ REQUIRES_ARGS = {
     "agent-runner.py",        # custom parser: exits 0 with usage print
     "command-runner.py",      # custom parser: exits 0 with usage print
     "cross-repo-auditor.py",  # requires --be and --fe
+    "pr-review.py",           # requires --pr or --all-open
 }
 
 # Scripts with non-argparse CLI (custom parsing, prints usage but exits 0)
