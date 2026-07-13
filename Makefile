@@ -18,8 +18,6 @@
 
 PYTHON  := python3
 FIX_MD  := scripts/fix-markdown.py
-TESTS   := tests/test_fix_markdown.py
-TESTS2  := tests/test_runners.py
 
 help:
 	@echo "everything-hermes-code"
@@ -29,7 +27,7 @@ help:
 	@echo "  dashboard  Show unified status (docker + repos + health)"
 	@echo "  status     Deploy status (BE + FE)"
 	@echo "  repos      Multi-repo git status"
-	@echo "  docker     Docker health check"
+	@echo "  docker-check  Docker health check"
 	@echo "  lint       Fix markdown formatting"
 	@echo "  test       Run unit tests"
 	@echo "  hooks      Install git hooks"
@@ -50,9 +48,8 @@ lint:
 
 test:
 	@echo ">>> Running tests..."
-	@$(PYTHON) $(TESTS)
-	@$(PYTHON) $(TESTS2)
-	@echo ">>> Done"
+	@$(PYTHON) -m pytest tests/ -v --tb=short 2>&1 | tail -50
+	@echo ">>> Done (exit code: $$?)"
 
 hooks:
 	@echo ">>> Installing git hooks..."

@@ -9,3 +9,4 @@ node_modules/
 __pycache__/
 .venv/
 venv/reports/
+.pytest_cache/
