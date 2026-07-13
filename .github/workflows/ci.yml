@@ -70,15 +70,24 @@ jobs:
 
       - name: Check all scripts import cleanly
         run: |
-          for f in scripts/*.py; do
-            name=$(basename "$f")
-            if [ "$name" = "ehc_config.py" ]; then
-              # ehc_config needs yaml but that's handled
-              python -c "import yaml; import importlib.util; spec = importlib.util.spec_from_file_location('x', '$f'); mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod); print(f'  ✅ {name}')"
-            else
-              python -c "import importlib.util; spec = importlib.util.spec_from_file_location('x', '$f'); mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod); print(f'  ✅ {name}')"
-            fi
-          done
+          python -c "
+          import importlib.util, sys, pathlib
+          scripts = pathlib.Path('scripts')
+          failures = []
+          for f in sorted(scripts.glob('*.py')):
+              try:
+                  spec = importlib.util.spec_from_file_location('x', str(f))
+                  mod = importlib.util.module_from_spec(spec)
+                  spec.loader.exec_module(mod)
+                  print(f'  ✅ {f.name}')
+              except Exception as e:
+                  print(f'  ❌ {f.name}: {e}')
+                  failures.append(f.name)
+          if failures:
+              print(f'\\nFailed: {failures}')
+              sys.exit(1)
+          print('✅ All scripts import cleanly')
+          "
 
       - name: Verify Makefile targets
         run: |
