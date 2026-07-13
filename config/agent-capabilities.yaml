@@ -1,0 +1,85 @@
+# Agent Capabilities Definition
+#
+# Central registry of all available agents. Orchestrator and Router
+# read from this file instead of hardcoding mappings.
+#
+# Each agent:
+#   name          — display name
+#   description   — short role description
+#   strengths     — list of competency areas
+#   tags          — classification tags
+#   max_concurrent — how many instances can run simultaneously
+#   output_format — markdown or code
+
+agents:
+  architect:
+    name: Architect Agent
+    description: System design and architecture decisions
+    strengths: [architecture, design, planning, scalability]
+    tags: [design, planning, high-level]
+    max_concurrent: 1
+    output_format: markdown
+
+  coder:
+    name: Coder Agent
+    description: Code implementation and best practices
+    strengths: [implementation, feature, bugfix, refactor]
+    tags: [implementation, development]
+    max_concurrent: 3
+    output_format: code
+
+  debugger:
+    name: Debugger Agent
+    description: Bug identification and root cause analysis
+    strengths: [debugging, root-cause, error-analysis]
+    tags: [bugfix, analysis]
+    max_concurrent: 2
+    output_format: markdown
+
+  reviewer:
+    name: Reviewer Agent
+    description: Code quality, security, and performance review
+    strengths: [code-review, quality, security-review]
+    tags: [quality, review]
+    max_concurrent: 2
+    output_format: markdown
+
+  documenter:
+    name: Documenter Agent
+    description: Documentation generation and maintenance
+    strengths: [writing, documentation, changelog]
+    tags: [docs, writing]
+    max_concurrent: 1
+    output_format: markdown
+
+  optimizer:
+    name: Optimizer Agent
+    description: Performance optimization and efficiency
+    strengths: [performance, optimization, profiling]
+    tags: [performance, refactor]
+    max_concurrent: 1
+    output_format: markdown
+
+  planner:
+    name: Planner Agent
+    description: Project planning and task breakdown
+    strengths: [planning, estimation, risk-analysis]
+    tags: [planning, management]
+    max_concurrent: 1
+    output_format: markdown
+
+  security:
+    name: Security Agent
+    description: Security analysis and vulnerability detection
+    strengths: [security, penetration-testing, audit]
+    tags: [security, audit]
+    max_concurrent: 1
+    output_format: markdown
+
+  tdd-guide:
+    name: TDD Guide Agent
+    description: Test-driven development guidance
+    strengths: [testing, tdd, coverage]
+    tags: [test, quality]
+    max_concurrent: 1
+    output_format: code

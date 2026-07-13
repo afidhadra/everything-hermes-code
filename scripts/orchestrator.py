@@ -45,6 +45,13 @@ from enum import Enum
 from pathlib import Path
 from typing import Optional
 
+# Import Smart Agent Router (sibling in scripts/)
+import importlib.util
+_router_path = Path(__file__).parent / "agent-router.py"
+_router_spec = importlib.util.spec_from_file_location("agent_router", str(_router_path))
+agent_router = importlib.util.module_from_spec(_router_spec)
+_router_spec.loader.exec_module(agent_router)
+
 # ============================================================
 # Configuration
 # ============================================================
@@ -102,7 +109,7 @@ COMPLEXITY_MARKERS = {
 class TaskAnalysis:
     """Result of analyzing a task."""
 
-    def __init__(self, task: str):
+    def __init__(self, task: str, force_agents: Optional[list[str]] = None):
         self.task = task
         self.task_lower = task.lower()
         self.complexity = Complexity.SIMPLE
@@ -111,6 +118,8 @@ class TaskAnalysis:
         self.reasoning: list[str] = []
         self.confidence = 0.0
         self.estimated_minutes = 0
+        self.force_agents = force_agents
+        self.routing_scores: list[dict] = []
         self._analyze()
 
     def _analyze(self):
@@ -184,7 +193,33 @@ class TaskAnalysis:
         else:
             self.estimated_minutes = 30
 
-        # --- Select agents ---
+        # --- Select agents via Smart Agent Router ---
+        self._route_agents()
+
+    def _route_agents(self):
+        """Use Smart Agent Router to select agents based on task."""
+        global agent_router
+        if agent_router is not None:
+            try:
+                routing_config = agent_router.load_routing_config()
+                result = agent_router.route_task(
+                    self.task, routing_config,
+                    force_agents=self.force_agents,
+                )
+                self.agents = result.recommended
+                self.confidence = result.confidence
+                self.routing_scores = [
+                    {"category": cs.name, "score": cs.score,
+                     "matched": cs.matched, "agents": cs.agents}
+                    for cs in result.category_scores
+                ]
+                if result.reasoning:
+                    self.reasoning.extend(result.reasoning)
+                return
+            except Exception:
+                pass  # Fall through to keyword-based
+
+        # Fallback: keyword-based agent selection
         self.agents = self._select_agents()
 
     def _select_agents(self) -> list[str]:
@@ -220,8 +255,14 @@ class TaskAnalysis:
             f"Agents: {', '.join(self.agents)}",
             f"Confidence: {self.confidence:.0%}",
         ]
+        if self.routing_scores:
+            scores_str = ", ".join(
+                f"{s['category']}={s['score']:.2f}"
+                for s in self.routing_scores[:3]
+            )
+            lines.append(f"Routing: {scores_str}")
         if self.reasoning:
-            lines.append(f"Reasoning: {'; '.join(self.reasoning)}")
+            lines.append(f"Reasoning: {'; '.join(self.reasoning[:3])}")
         return "\n".join(lines)
 
 
@@ -275,6 +316,23 @@ def generate_plan(analysis: TaskAnalysis) -> str:
         ])
         for r in analysis.reasoning:
             lines.append(f"- {r}")
+        lines.append("")
+
+    # Routing scores (from Smart Agent Router)
+    if analysis.routing_scores:
+        lines.extend([
+            "### Routing Scores",
+            "",
+            "| Category | Score | Matched | Agents |",
+            "|----------|-------|---------|--------|",
+        ])
+        for s in analysis.routing_scores:
+            matched_str = ", ".join(s.get("matched", []) or [])
+            agents_str = ", ".join(s.get("agents", []))
+            lines.append(
+                f"| {s['category']} | {s['score']:.2f} "
+                f"| {matched_str} | {agents_str} |"
+            )
         lines.append("")
 
     # Agent plan
@@ -778,6 +836,13 @@ def main():
         help="Skip plan review prompt — auto-approve and execute"
     )
     parser.add_argument(
+        "--force-agents",
+        type=str,
+        default=None,
+        metavar="AGENTS",
+        help="Override agent selection (comma-separated: coder,security)"
+    )
+    parser.add_argument(
         "--sequential",
         action="store_true",
         help="Run agents sequentially instead of parallel"
@@ -805,6 +870,11 @@ def main():
         help="Allow --yolo on spawned agents (auto-approve all tool calls)"
     )
     args = parser.parse_args()
+
+    # Parse force-agents if provided
+    _force_agents = None
+    if args.force_agents:
+        _force_agents = [a.strip() for a in args.force_agents.split(",")]
 
     # ================================================================
     # PHASE 0: Load existing plan (if --plan provided)
@@ -854,8 +924,9 @@ def main():
             if not agents:
                 agents = ["coder"]
 
-            analysis = TaskAnalysis(task)
-            analysis.agents = agents
+            analysis = TaskAnalysis(task, force_agents=_force_agents)
+            if not _force_agents:
+                analysis.agents = agents
 
             print(f"\n📋 Using {len(agents)} agent(s) from plan: "
                   f"{', '.join(agents)}")
@@ -869,7 +940,7 @@ def main():
 
             task = " ".join(args.task)
             print(f"\n📋 Analyzing task...")
-            analysis = TaskAnalysis(task)
+            analysis = TaskAnalysis(task, force_agents=_force_agents)
             plan_content = generate_plan(analysis)
             saved = save_plan(plan_content, plan_path)
             print(f"\n📄 New plan saved to: {saved}")
@@ -889,7 +960,7 @@ def main():
                 sys.exit(1)
 
             task = " ".join(args.task)
-            analysis = TaskAnalysis(task)
+            analysis = TaskAnalysis(task, force_agents=_force_agents)
             agents = analysis.agents
 
         # --- Execute from plan ---
@@ -939,7 +1010,7 @@ def main():
     # PHASE 2: Analyze
     # ================================================================
     print(f"\n📋 Analyzing task...")
-    analysis = TaskAnalysis(task)
+    analysis = TaskAnalysis(task, force_agents=_force_agents)
 
     print(f"\n{analysis.summary()}")
 

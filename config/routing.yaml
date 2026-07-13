@@ -1,0 +1,82 @@
+# Agent Routing Rules for Smart Agent Router
+#
+# Each category defines:
+#   keywords   — trigger words (case-insensitive match)
+#   weight     — 0.0–1.0, how much this category matters
+#   agents     — ordered list of agents to recommend
+#   min_confidence — minimum score threshold (0.0–1.0)
+#
+# Add new categories or modify existing ones without touching code.
+
+categories:
+  security:
+    keywords: [auth, jwt, oauth, password, encrypt, hash, token, secret,
+               inject, xss, csrf, ssl, tls, vulnerability, cipher,
+               permission, role, acl, sso, saml, credential, firewall,
+               sanitize, escape, sql injection, xxe]
+    weight: 0.80
+    agents: [security, reviewer]
+    min_confidence: 0.05
+
+  bug:
+    keywords: [bug, fix, crash, error, fail, broken, exception,
+               regression, traceback, glitch, defect, faulty, wrong,
+               incorrect, unexpected, weird, misbehave, not working]
+    weight: 0.90
+    agents: [debugger, reviewer]
+    min_confidence: 0.06
+
+  feature:
+    keywords: [add, implement, create, new, build, develop, integrate,
+               feature, introduce, support, enable, allow, make it]
+    weight: 0.70
+    agents: [coder]
+    min_confidence: 0.03
+
+  refactor:
+    keywords: [refactor, cleanup, clean up, restructure, simplify,
+               optimize, performance, technical debt, de-duplicate,
+               consolidate, extract, inline, rework, modernize, tidy]
+    weight: 0.85
+    agents: [coder, optimizer, reviewer]
+    min_confidence: 0.05
+
+  test:
+    keywords: [test, coverage, unit test, integration test, e2e, spec,
+               tdd, testing, assertion, mock, stub, fixture, regression test]
+    weight: 0.80
+    agents: [tdd-guide]
+    min_confidence: 0.04
+
+  docs:
+    keywords: [document, readme, docs, explain, describe, changelog,
+               api doc, swagger, guide, tutorial, usage, example,
+               comment, inline doc, jsdoc, docstring]
+    weight: 0.75
+    agents: [documenter]
+    min_confidence: 0.04
+
+  architecture:
+    keywords: [architecture, design, plan, structure, database, schema,
+               migration, redesign, component, module, service,
+               microservice, monolithic, system design, tech stack,
+               data flow, dependency, api design, contract]
+    weight: 0.85
+    agents: [architect, planner, reviewer]
+    min_confidence: 0.06
+
+  database:
+    keywords: [database, db, sql, nosql, migration, schema, table,
+               index, query, postgres, mysql, redis, mongodb, orm,
+               prisma, gorm, sequelize, knex]
+    weight: 0.80
+    agents: [architect, coder]
+    min_confidence: 0.05
+
+  deploy:
+    keywords: [deploy, release, ci, cd, pipeline, staging, production,
+               rollback, docker, kubernetes, k8s, container, image,
+               workflow, action, build, artifact, version, tag]
+    weight: 0.70
+    agents: [planner, coder]
+    min_confidence: 0.04
