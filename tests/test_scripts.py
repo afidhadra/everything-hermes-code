@@ -65,6 +65,7 @@ DRY_RUN_SCRIPTS = {
     "orchestrator.py",
     "deploy.py",
     "regression-analyzer.py",
+    "pr-review.py",
 }
 
 
@@ -135,6 +136,9 @@ def test_script_dry_run(script_path: Path):
     extra_args = []
     if name == "orchestrator.py":
         extra_args = ["review"]
+    elif name == "pr-review.py":
+        # Needs --pr even in dry-run; will fail gracefully when repo not found
+        extra_args = ["--pr", "1", "--dry-run", "--repo", "test/repo", "--json"]
     elif name == "cross-repo-auditor.py":
         # Required: --be and --fe even in dry-run
         extra_args = ["--be", "/tmp/dummy-be", "--fe", "/tmp/dummy-fe"]
