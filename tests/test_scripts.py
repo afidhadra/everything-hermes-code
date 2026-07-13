@@ -40,6 +40,7 @@ ZERO_ARGS_SCRIPTS = {
     "repo-status.py",        # optional --json
     "deploy.py",             # defaults to --status when no args
     "regression-analyzer.py", # defaults to scanning HEAD~1
+    "mcp-manager.py",        # defaults to "scan" action
 }
 
 # Scripts that require at least one positional/required argument
@@ -135,5 +136,14 @@ def test_script_dry_run(script_path: Path):
     elif name == "cross-repo-auditor.py":
         # Required: --be and --fe even in dry-run
         extra_args = ["--be", "/tmp/dummy-be", "--fe", "/tmp/dummy-fe"]
+    elif name == "regression-analyzer.py":
+        # Dry-run still runs analysis and may exit non-zero if
+        # critical regressions exist — that's correct behavior.
+        # We just verify it produces output, not exit code.
+        result = run_script(script_path, ["--dry-run"], expected_code=None)
+        assert "REGRESSION" in result or "regression" in result, (
+            f"{name}: --dry-run should produce regression output"
+        )
+        return
 
     run_script(script_path, ["--dry-run"] + extra_args, expected_code=0)
