@@ -1,0 +1,66 @@
+# Everything Hermes Code — Project Configuration
+#
+# Copy this file to .ehc.yaml in your project root and customize.
+# All tools (ehc.py, deploy.py, docker-check.py) read from this file.
+
+project:
+  name: YOUR-PROJECT-NAME
+  root: ~/Projects/your-project
+
+# Repository definitions (for deploy.py, repo-status, regression-analyzer)
+repos:
+  be:
+    name: backend (Backend)
+    dir: backend
+    lang: go
+    container: backend-api-dev
+    health_url: http://localhost:8080/api/v1/health
+    compose_service: api
+
+  fe:
+    name: frontend (Frontend)
+    dir: frontend
+    lang: vue
+    container: frontend-dev
+    health_url: http://localhost:5173
+    compose_service: frontend
+
+# Docker deployment (for deploy.py)
+deploy:
+  dir: deploy
+  compose_dev: docker-compose.dev.yml
+  compose_prod: docker-compose.prod.yml
+  health_timeout: 60
+  health_interval: 2
+
+# Docker containers (for docker-check.py, ehc.py)
+docker:
+  containers:
+    api-dev:
+      friendly: API Dev
+      health_url: http://localhost:8080/api/v1/health
+      auto_restart: true
+      priority: 1
+
+    frontend-dev:
+      friendly: Frontend Dev
+      health_url: http://localhost:5173
+      auto_restart: true
+      priority: 1
+
+    postgres-dev:
+      friendly: PostgreSQL
+      auto_restart: true
+      priority: 2
+
+# Service health endpoints (for ehc.py dashboard)
+services:
+  - name: API
+    url: http://localhost:8080/api/v1/health
+    type: http
+  - name: Frontend
+    url: http://localhost:5173
+    type: http
+  - name: Database
+    url: localhost:5432
+    type: tcp

@@ -71,48 +71,21 @@ def expand_path(path_str: str) -> str:
 
 
 def get_repos(config: dict) -> dict:
-    """Get repo configs. Falls back to frozen-pos defaults."""
-    repos = config.get("repos", {})
-    if not repos:
-        # Built-in defaults for frozen-pos
-        root = expand_path("~/Projects/Freelance/FROZEN-POS")
-        return {
-            "be": {
-                "name": "Backend",
-                "dir": "frozen-pos-api",
-                "lang": "go",
-                "container": "frozen-pos-api-dev",
-                "health_url": "http://localhost:8080/api/v1/health",
-                "compose_service": "api",
-            },
-            "fe": {
-                "name": "Frontend",
-                "dir": "frozen-pos-frontend",
-                "lang": "vue",
-                "container": "frozen-pos-frontend-dev",
-                "health_url": "http://localhost:5173",
-                "compose_service": "frontend",
-            },
-        }
-    
-    # Expand paths
-    for key, repo in repos.items():
-        if "dir" in repo:
-            repo["dir"] = expand_path(repo["dir"])
-    return repos
+    """Get repo configs from config dict. Returns empty dict if not configured."""
+    return config.get("repos", {})
 
 
 def get_project_root(config: dict) -> str:
-    """Get project root path."""
-    root = config.get("project", {}).get("root", "~/Projects/Freelance/FROZEN-POS")
+    """Get project root path. Returns current directory if not configured."""
+    root = config.get("project", {}).get("root", str(Path.cwd()))
     return expand_path(root)
 
 
 def get_deploy_config(config: dict) -> dict:
-    """Get deploy configuration."""
+    """Get deploy configuration from config or sensible defaults."""
     deploy = config.get("deploy", {})
     return {
-        "dir": deploy.get("dir", "inventory-deploy"),
+        "dir": deploy.get("dir", "deploy"),
         "compose_dev": deploy.get("compose_dev", "docker-compose.dev.yml"),
         "compose_prod": deploy.get("compose_prod", "docker-compose.prod.yml"),
         "health_timeout": deploy.get("health_timeout", 60),

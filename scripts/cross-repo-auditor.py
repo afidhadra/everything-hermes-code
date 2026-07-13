@@ -7,9 +7,9 @@ Validates model field sync, RBAC/permission coverage, and data contract integrit
 
 Usage:
     python3 cross-repo-auditor.py --be <BE_DIR> --fe <FE_DIR>
-    python3 cross-repo-auditor.py --be ~/frozen-pos-api --fe ~/frozen-pos-frontend
-    python3 cross-repo-auditor.py --be ~/frozen-pos-api --fe ~/frozen-pos-frontend --check models
-    python3 cross-repo-auditor.py --be ~/frozen-pos-api --fe ~/frozen-pos-frontend --check permissions
+    python3 cross-repo-auditor.py --be ~/backend --fe ~/frontend
+    python3 cross-repo-auditor.py --be ~/backend --fe ~/frontend --check models
+    python3 cross-repo-auditor.py --be ~/backend --fe ~/frontend --check permissions
 """
 
 import argparse

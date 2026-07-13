@@ -38,34 +38,52 @@ from typing import Optional
 
 
 # ============================================================
-# Configuration
+# Configuration — loaded from .ehc.yaml
 # ============================================================
 
-DEFAULT_PROJECT_ROOT = Path.home() / "Projects" / "Freelance" / "FROZEN-POS"
+# Import config loader
+import importlib.util
+_ehc_config_path = Path(__file__).parent / "ehc_config.py"
+_ehc_config_spec = importlib.util.spec_from_file_location("ehc_config", str(_ehc_config_path))
+ehc_config = importlib.util.module_from_spec(_ehc_config_spec)
+_ehc_config_spec.loader.exec_module(ehc_config)
 
-REPOS = {
-    "be": {
-        "name": "frozen-pos-api (Backend)",
-        "dir": "frozen-pos-api",
-        "lang": "Go",
-        "health_url": "http://localhost:8080/api/v1/health",
-        "container": "frozen-pos-api-dev",
-        "compose_service": "api",
-    },
-    "fe": {
-        "name": "frozen-pos-frontend (Frontend)",
-        "dir": "frozen-pos-frontend",
-        "lang": "Vue/TS",
-        "health_url": "http://localhost:5173",
-        "container": "frozen-pos-frontend-dev",
-        "compose_service": "frontend",
-    },
-}
+def _load_config() -> dict:
+    """Load project config from .ehc.yaml."""
+    config = ehc_config.load_config()
+    if not config:
+        print("⚠️  No .ehc.yaml found. Create one from .ehc.yaml.example")
+        print("   Using built-in defaults for demo.\n")
+    return config
 
-DEPLOY_DIR = "inventory-deploy"
+_CONFIG = _load_config()
+
+# Resolve root from config or fallback
+PROJECT_ROOT = Path(ehc_config.get_project_root(_CONFIG))
+
+# Build repo list from config
+REPOS: dict[str, dict] = {}
+_rcfg = ehc_config.get_repos(_CONFIG)
+for key, r in _rcfg.items():
+    dir_path = r.get("dir", key)
+    # Resolve relative to project root if not absolute
+    if not Path(dir_path).is_absolute():
+        dir_path = str(PROJECT_ROOT / dir_path)
+    REPOS[key] = {
+        "name": r.get("name", key),
+        "dir": dir_path,
+        "lang": r.get("lang", "unknown"),
+        "health_url": r.get("health_url", ""),
+        "container": r.get("container", ""),
+        "compose_service": r.get("compose_service", ""),
+    }
+
+# Deploy config
+_DEPLOY = ehc_config.get_deploy_config(_CONFIG)
+DEPLOY_DIR = _DEPLOY.get("dir", "deploy")
 COMPOSE_FILES = {
-    "dev": "docker-compose.dev.yml",
-    "prod": "docker-compose.prod.yml",
+    "dev": _DEPLOY.get("compose_dev", "docker-compose.dev.yml"),
+    "prod": _DEPLOY.get("compose_prod", "docker-compose.prod.yml"),
 }
 
 HEALTH_TIMEOUT = 60  # seconds to wait for health check
@@ -554,8 +572,8 @@ def main():
     parser.add_argument(
         "--project-root",
         type=str,
-        default=str(DEFAULT_PROJECT_ROOT),
-        help=f"Project root (default: {DEFAULT_PROJECT_ROOT})"
+        default=str(PROJECT_ROOT),
+        help=f"Project root (default: {PROJECT_ROOT})"
     )
     parser.add_argument(
         "--force",

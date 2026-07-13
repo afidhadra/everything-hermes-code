@@ -20,6 +20,13 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
+# Import config loader
+import importlib.util
+_ehc_config_path = Path(__file__).parent / "ehc_config.py"
+_ehc_config_spec = importlib.util.spec_from_file_location("ehc_config", str(_ehc_config_path))
+ehc_config = importlib.util.module_from_spec(_ehc_config_spec)
+_ehc_config_spec.loader.exec_module(ehc_config)
+
 # Colors
 RED = "\033[0;31m"
 GREEN = "\033[0;32m"
@@ -29,47 +36,12 @@ BOLD = "\033[1m"
 DIM = "\033[2m"
 NC = "\033[0m"
 
-# Known containers (for friendly names + auto-restart priority)
-KNOWN_CONTAINERS = {
-    "frozen-pos-api-dev": {
-        "friendly": "Frozen POS API",
-        "health_url": "http://localhost:8080/api/v1/health",
-        "auto_restart": True,
-        "priority": 1,
-    },
-    "frozen-pos-frontend-dev": {
-        "friendly": "Frozen POS Frontend",
-        "health_url": "http://localhost:5173",
-        "auto_restart": True,
-        "priority": 1,
-    },
-    "frozen-pos-postgres-dev": {
-        "friendly": "Frozen POS PostgreSQL",
-        "auto_restart": True,
-        "priority": 2,
-    },
-    "frozen-pos-redis-dev": {
-        "friendly": "Frozen POS Redis",
-        "auto_restart": True,
-        "priority": 2,
-    },
-    "sonarqube": {
-        "friendly": "SonarQube",
-        "health_url": "http://localhost:9000/api/system/status",
-        "auto_restart": False,
-        "priority": 3,
-    },
-    "9router": {
-        "friendly": "9Router Proxy",
-        "auto_restart": False,
-        "priority": 3,
-    },
-    "ogham-postgres": {
-        "friendly": "Ogham PostgreSQL",
-        "auto_restart": False,
-        "priority": 3,
-    },
-}
+# Known containers (from config, with auto-restart priority)
+_CONFIG = ehc_config.load_config()
+KNOWN_CONTAINERS = ehc_config.get_docker_containers(_CONFIG)
+if not KNOWN_CONTAINERS:
+    # Fallback: scan all containers, no special handling
+    KNOWN_CONTAINERS = {}
 
 
 @dataclass

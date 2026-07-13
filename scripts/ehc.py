@@ -68,15 +68,19 @@ def get_docker_status() -> list[dict]:
         status = parts[1] if len(parts) > 1 else "unknown"
         is_running = "up" in status.lower() or "Up" in status
 
-        # Quick health check for known URLs
+        # Quick health check for known containers from config
         health = ""
-        health_urls = {
-            "frozen-pos-api-dev": ("http://localhost:8080/api/v1/health", True),
-            "frozen-pos-frontend-dev": ("http://localhost:5173", False),
-            "sonarqube": ("http://localhost:9000/api/system/status", True),
-        }
-        if name in health_urls and is_running:
-            url, quiet = health_urls[name]
+        containers_cfg = ehc_config.get_docker_containers(
+            ehc_config.load_config()
+        )
+        known = {}
+        for cname, cfg in containers_cfg.items():
+            url = cfg.get("health_url", "")
+            if url:
+                known[cname] = (url, False)
+
+        if name in known and is_running:
+            url, quiet = known[name]
             try:
                 hr = subprocess.run(
                     ["curl", "-s", "-o", "/dev/null", "-w", "%{http_code}",
@@ -135,7 +139,7 @@ def render_docker(containers: list[dict]) -> list[str]:
 
 
 # ============================================================
-# Git Repos (frozen-pos focus + quick scan)
+# Git Repos
 # ============================================================
 
 def git(args: list[str], cwd: str) -> str:
@@ -175,7 +179,7 @@ def get_repo_status(path: str, name: str) -> dict:
 
 def render_repos(repos: list[dict]) -> list[str]:
     """Render repo section."""
-    lines = [f"\n  {BOLD}FROZEN-POS REPOS{NC}"]
+    lines = [f"\n  {BOLD}GIT REPOS{NC}"]
     lines.append(f"  {DIM}{LINE}{NC}")
 
     for r in repos:
@@ -314,13 +318,10 @@ def make_bar(pct: int, width: int = 20) -> str:
 def get_service_health(services: list) -> list[str]:
     """Quick health check for configured services."""
     if not services:
-        # Fallback defaults
+        # No config — scan localhost for common ports
         services = [
-            {"name": "API", "url": "http://localhost:8080/api/v1/health", "type": "http"},
+            {"name": "API", "url": "http://localhost:8080", "type": "http"},
             {"name": "Frontend", "url": "http://localhost:5173", "type": "http"},
-            {"name": "PostgreSQL", "url": "localhost:5433", "type": "tcp"},
-            {"name": "Redis", "url": "localhost:6380", "type": "tcp"},
-            {"name": "pgAdmin", "url": "localhost:5052", "type": "tcp"},
         ]
 
     lines = [f"\n  {BOLD}SERVICE HEALTH{NC}"]
