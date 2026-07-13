@@ -15,7 +15,8 @@
 #   help      — show this help
 
 .PHONY: lint test hooks check analyze clean setup help \
-        dashboard status repos docker-check install-skills generate-agents
+        dashboard status repos docker-check install-skills generate-agents \
+        install-cli install-completion install
 
 PYTHON  := python3
 FIX_MD  := scripts/fix-markdown.py
@@ -112,3 +113,27 @@ generate-agents:
 	@echo ">>> Generating AGENTS.md..."
 	@$(PYTHON) scripts/generate-agents.py
 	@echo ">>> Done"
+
+install-cli:
+	@echo ">>> Installing ehc CLI to ~/.local/bin..."
+	@mkdir -p ~/.local/bin
+	@chmod +x scripts/ehc
+	@ln -sf $$(pwd)/scripts/ehc ~/.local/bin/ehc
+	@echo "  ✅ Installed: ehc → ~/.local/bin/ehc"
+	@echo "  Try: ehc help"
+	@echo ">>> Done"
+
+install-completion:
+	@echo ">>> Installing fish shell completion..."
+	@mkdir -p ~/.config/fish/completions
+	@cp scripts/ehc.fish ~/.config/fish/completions/
+	@echo "  ✅ Installed: ~/.config/fish/completions/ehc.fish"
+	@echo ">>> Done"
+
+install: install-cli install-completion
+	@echo ""
+	@echo "  ╔══════════════════════════════════════════╗"
+	@echo "  ║  EHC fully installed!                    ║"
+	@echo "  ╚══════════════════════════════════════════╝"
+	@echo "  Commands available: ehc"
+	@echo "  Shell completion: fish (restart shell)"

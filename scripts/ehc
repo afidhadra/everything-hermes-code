@@ -1,0 +1,137 @@
+#!/usr/bin/env python3
+"""
+ehc — unified CLI entry point for everything-hermes-code.
+
+Wraps all Python scripts under a single command with subcommands.
+Auto-detects project root from script location.
+
+Usage:
+    ehc <subcommand> [args...]
+
+Subcommands:
+    orchestrate   Plan-first multi-agent pipeline
+    route         Smart agent recommendation
+    deploy        Multi-repo deploy coordinator
+    docker        Docker container health monitor
+    review        Automated GitHub PR review
+    mcp           MCP server discovery + registry
+    dashboard     Unified status dashboard
+    status        Multi-repo git status
+    hooks         Git hooks runner
+    generate      Auto-generate AGENTS.md
+    lint          Fix markdown formatting
+    test          Run unit tests
+    check         Check dependencies
+    help          Show this help
+
+Examples:
+    ehc orchestrate "Refactor auth module"
+    ehc deploy status
+    ehc docker check
+    ehc review --pr 5
+    ehc mcp scan
+    ehc dashboard
+    ehc route "Fix login bug" --json
+"""
+
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+SCRIPTS_DIR = Path(__file__).resolve().parent.parent / "scripts"
+REPO_DIR = Path(__file__).resolve().parent.parent
+
+# Subcommand → script mapping
+COMMANDS = {
+    "orchestrate": ("orchestrator.py", "Plan-first multi-agent pipeline"),
+    "route":       ("agent-router.py", "Smart agent recommendation"),
+    "deploy":      ("deploy.py", "Multi-repo deploy coordinator"),
+    "docker":      ("docker-check.py", "Docker container health monitor"),
+    "review":      ("pr-review.py", "Automated GitHub PR review"),
+    "mcp":         ("mcp-manager.py", "MCP server discovery + registry"),
+    "dashboard":   ("ehc.py", "Unified status dashboard"),
+    "status":      ("repo-status.py", "Multi-repo git status"),
+    "generate":    ("generate-agents.py", "Auto-generate AGENTS.md"),
+    "lint":        ("fix-markdown.py", "Fix markdown formatting"),
+    "hooks":       (None, "Git hooks management"),
+    "test":        (None, "Run unit tests"),
+    "check":       (None, "Check dependencies"),
+    "clean":       (None, "Remove cache files"),
+    "install-skills": (None, "Install Hermes skills"),
+}
+
+
+def print_help():
+    print("ehc — everything-hermes-code unified CLI")
+    print()
+    print("Usage: ehc <subcommand> [args...]")
+    print()
+    print("Subcommands:")
+    max_name = max(len(c) for c in COMMANDS)
+    for name, (_, desc) in sorted(COMMANDS.items()):
+        print(f"  {name:<{max_name}}  {desc}")
+    print()
+    print("Examples:")
+    print("  ehc orchestrate \"Refactor auth module\"")
+    print("  ehc deploy status")
+    print("  ehc docker check")
+    print("  ehc review --pr 5")
+    print("  ehc mcp scan")
+    print("  ehc route \"Fix login bug\" --json")
+    print()
+    print("Pass --help to any subcommand for its specific options:")
+    print("  ehc orchestrate --help")
+
+
+def run_make_target(target: str, args: list[str]) -> int:
+    """Run a make target with additional args."""
+    cmd = ["make", target]
+    # Most make targets don't take args, but pass them anyway
+    result = subprocess.run(cmd, cwd=str(REPO_DIR))
+    return result.returncode
+
+
+def main():
+    if len(sys.argv) < 2 or sys.argv[1] in ("-h", "--help", "help"):
+        print_help()
+        return 0
+
+    subcmd = sys.argv[1]
+    args = sys.argv[2:]
+
+    if subcmd not in COMMANDS:
+        print(f"ehc: unknown subcommand '{subcmd}'")
+        print("Run 'ehc help' for usage.")
+        return 1
+
+    script_name, _ = COMMANDS[subcmd]
+
+    # Handle make-based commands
+    if script_name is None:
+        make_map = {
+            "test": "test", "lint": "lint", "check": "check",
+            "clean": "clean", "hooks": "hooks",
+            "install-skills": "install-skills",
+        }
+        if subcmd in make_map:
+            return run_make_target(make_map[subcmd], args)
+        print(f"ehc: subcommand '{subcmd}' not implemented")
+        return 1
+
+    script_path = SCRIPTS_DIR / script_name
+    if not script_path.exists():
+        print(f"ehc: script not found: {script_path}")
+        return 1
+
+    # Run the Python script with remaining args
+    cmd = [sys.executable, str(script_path)] + args
+    try:
+        result = subprocess.run(cmd, cwd=str(REPO_DIR))
+        return result.returncode
+    except KeyboardInterrupt:
+        return 130
+
+
+if __name__ == "__main__":
+    sys.exit(main())
