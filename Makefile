@@ -15,7 +15,7 @@
 #   help      — show this help
 
 .PHONY: lint test hooks check analyze clean setup help \
-        dashboard status repos docker-check install-skills
+        dashboard status repos docker-check install-skills generate-agents
 
 PYTHON  := python3
 FIX_MD  := scripts/fix-markdown.py
@@ -107,3 +107,8 @@ install-skills:
 	    echo "  ✅ Installed: ehc-$$name"; \
 	done
 	@echo ">>> Done. Load via: hermes --skills ehc-<name>"
+
+generate-agents:
+	@echo ">>> Generating AGENTS.md..."
+	@$(PYTHON) scripts/generate-agents.py
+	@echo ">>> Done"

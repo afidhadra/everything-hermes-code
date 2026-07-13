@@ -42,6 +42,7 @@ ZERO_ARGS_SCRIPTS = {
     "regression-analyzer.py", # defaults to scanning HEAD~1
     "mcp-manager.py",        # defaults to "scan" action
     "tui.py",                # defaults to "dashboard" (starts live TUI)
+    "generate-agents.py",    # defaults to generate mode
 }
 
 # Scripts that require at least one positional/required argument
