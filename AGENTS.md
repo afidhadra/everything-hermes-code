@@ -4,79 +4,95 @@
 
 ## What is this project?
 
-A Claude Code-style toolkit for Hermes Agent — agents, commands, rules, skills,
-hooks, prompts, and MCP configurations. Local-only personal tool, no deployment.
+A developer toolkit for Hermes Agent — 15 Python scripts, 6 Hermes skill wrappers,
+config-based routing engine, MCP server manager, deploy coordinator, PR review bot,
+background task manager, and TUI dashboard. Local-only personal tool.
+
+**188 tests · 28 skipped (intentional) · CI/CD via GitHub Actions**
 
 ## Tech Stack
 
-- **Scripts:** Python 3, Bash, Node.js (hooks)
-- **Docs:** Markdown (markdownlint + Prettier enforced)
-- **Code Quality:** SonarQube Community Edition v26.7 (Docker, localhost:9000)
-- **AI Models:** GLM-5.2 via Z.AI (primary), Big Pickle via OpenCode Zen (free tier)
+- **Scripts:** Python 3.11+, Bash (git hooks), Node.js (hooks)
+- **Config:** YAML (`.ehc.yaml`, `config/routing.yaml`)
+- **Testing:** pytest, coverage
+- **TUI:** Rich (terminal tables, panels, live display)
+- **CI/CD:** GitHub Actions (3 Python versions)
+- **AI Agents:** Hermes Agent (primary), OpenCode, Claude Code, Codex
 
 ## Project Structure
 
-```text
-agents/          AI agent definitions (architect, coder, debugger, ...)
-commands/        Slash command docs (analyze, fix, review, security)
-rules/           Coding rules (security, coding-style, testing, git-workflow)
-skills/          Tech skill guides (Go, Vue, Docker, Git)
-hooks/           Git hooks (pre-commit, post-commit, pre-push)
-prompts/         System prompts (coding, debug, review, analysis)
-scripts/         Utility scripts (fix-markdown.py, agent-runner.py)
-mcp-configs/     MCP server configs (SonarQube, GitHub)
-tests/           Unit tests
-docs/            Documentation (quick-start, architecture, contributing)
-examples/        Usage examples
+```
+├── scripts/          15 Python tools (orchestrator, agent-router, pr-review, ...)
+├── skills/           6 Hermes skill wrappers + 5 tech guides
+├── config/           routing.yaml (scoring) + agent-capabilities.yaml
+├── tests/            188 tests (pytest, auto-discovery)
+├── agents/           AI agent definitions (architect, coder, debugger, ...)
+├── rules/            Coding rules (security, testing, git-workflow)
+├── prompts/          System prompts (coding, debug, review)
+├── commands/         Slash command docs (analyze, fix, review, security)
+├── hooks/            Git hooks (pre-commit, pre-push, post-commit)
+├── mcp-configs/      MCP server configs (SonarQube, GitHub, Context7, Ogham)
+├── .github/          CI/CD workflows
+├── .ehc.yaml         Project config (edit for your project)
+├── .ehc.yaml.example Generic template
+└── AGENTS.md         This file
 ```
 
-## Conventions
+## Available Tools
 
-- **Commit messages:** Conventional Commits — `type(scope): subject`
-- **Markdown:** markdownlint enforced via pre-commit hook. Config in `.markdownlint.json`
-- **Python:** PEP 8, type hints, docstrings on public functions
-- **Shell:** `set -euo pipefail`, no bashisms in portable scripts
-- **File naming:** lowercase-with-hyphens for all files
+| Script | Function |
+|--------|----------|
+| `orchestrator.py` | Plan-first multi-agent pipeline (analyze → plan → review → execute → report) |
+| `agent-router.py` | Weighted scoring agent recommendation engine |
+| `pr-review.py` | Automated GitHub PR review (security, quality, deps) |
+| `mcp-manager.py` | MCP server auto-discovery + registry + health check |
+| `deploy.py` | Multi-repo deploy coordinator with health verification |
+| `docker-check.py` | Docker container health monitor |
+| `task-worker.py` | Background agent execution worker |
+| `tui.py` | Rich-based TUI dashboard + history |
+| `ehc.py` | Unified status dashboard (docker, git, system) |
+| `repo-status.py` | Git repo status |
 
 ## Quick Commands
 
 ```bash
-make help      # show all targets
-make setup     # first-run: check deps + permissions + hooks
-make lint      # fix markdown formatting
-make test      # run unit tests
-make analyze   # run SonarQube scan
-make clean     # remove cache files
+make help              # show all targets
+make test              # run 188 tests
+make lint              # fix markdown formatting
+make check             # check dependencies
+make install-skills    # install tools as Hermes skills
+python3 ehc.py         # unified dashboard
+python3 docker-check.py # container health
 ```
 
-## Rules (auto-loaded)
+## Hermes Skills (installed via `make install-skills`)
 
-1. **Security:** No hardcoded secrets, validate all inputs, least privilege
-1. **Coding Style:** PEP 8 for Python, shellcheck for Bash, consistent naming
-1. **Testing:** Write tests for new Python functions, run `make test` before commit
-1. **Git Workflow:** Feature branches, conventional commits, squash-merge to development
+All tools have Hermes skill wrappers. Install permanently:
 
-## MCP Servers
+```bash
+make install-skills
+# → ~/.hermes/skills/ehc-*/
+# → Load: hermes -z "orchestrate: refactor auth" --skills ehc-orchestrator
+```
 
-- **SonarQube:** localhost:9000, token at `~/.sonarqube_token`, Community Edition
-- **GitHub:** `~/go/bin/github-mcp-server`, token from env `GITHUB_TOKEN`
+## Config
+
+Edit `.ehc.yaml` for project-specific settings (repos, containers, services).
+Template at `.ehc.yaml.example`.
+
+Routing config at `config/routing.yaml` — edit scoring rules without touching code.
 
 ## Environment
 
 - **OS:** Fedora 44, Hyprland (Wayland), fish shell
 - **SELinux:** Enforcing — Docker volumes need `:Z` flag
 - **Hardware:** Dell Precision 5530 (i9-8950HK, 30GB RAM)
+- **AI Model:** GLM-5.2 via Z.AI (primary)
 
-## Agent Workflow
+## Git Workflow
 
-1. Read rules from `rules/*.md` before making changes
-1. Check relevant skill in `skills/*.md` for tech-specific guidance
-1. Use prompts from `prompts/*.md` for task-appropriate system context
-1. Run `make test` before committing
-1. Pre-commit hook auto-fixes markdown
-
-## Files NOT to edit
-
-- `.git/hooks/*` — these are symlinks to `hooks/scripts/`, edit the source
-- `node_modules/` — doesn't exist but reserved
-- `scripts/__pycache__/` — generated, gitignored
+1. Feature branches → conventional commits → PR → squash-merge to `development`
+2. Run `make test` before every commit (pre-commit hook auto-fixes markdown)
+3. Pre-push hook runs regression analysis
+4. CI/CD runs 188 tests on push (3 Python versions)
+5. Commit format: `type(scope): subject` (feat, fix, refactor, chore, docs, test)
