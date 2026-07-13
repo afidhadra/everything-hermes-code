@@ -41,6 +41,7 @@ ZERO_ARGS_SCRIPTS = {
     "deploy.py",             # defaults to --status when no args
     "regression-analyzer.py", # defaults to scanning HEAD~1
     "mcp-manager.py",        # defaults to "scan" action
+    "tui.py",                # defaults to "dashboard" (starts live TUI)
 }
 
 # Scripts that require at least one positional/required argument

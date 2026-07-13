@@ -800,6 +800,77 @@ def aggregate_results(results: list[dict], analysis: TaskAnalysis) -> str:
 
 
 # ============================================================
+# Background Task Spawning
+# ============================================================
+
+def _spawn_background_worker(
+    task_id: str,
+    task_desc: str,
+    agents: list[str],
+    mode: str = "parallel",
+    max_parallel: int = 3,
+    yolo: bool = False,
+    notify: str = "hermes",
+):
+    """Spawn a background task-worker subprocess.
+
+    The worker runs agents independently and saves results to
+    /tmp/ehc-tasks/<task_id>/.
+    """
+    worker_script = Path(__file__).parent / "task-worker.py"
+    if not worker_script.exists():
+        print("❌ task-worker.py not found — cannot run in background")
+        sys.exit(1)
+
+    cmd = [
+        sys.executable, str(worker_script),
+        "--task-id", task_id,
+        "--task-desc", task_desc,
+        "--agents", ",".join(agents),
+        "--mode", mode,
+        "--max-parallel", str(max_parallel),
+    ]
+    if yolo:
+        cmd.append("--yolo")
+    if notify:
+        cmd.extend(["--notify", notify])
+
+    # Create tasks directory
+    tasks_dir = Path("/tmp/ehc-tasks")
+    tasks_dir.mkdir(parents=True, exist_ok=True)
+
+    try:
+        process = subprocess.Popen(
+            cmd,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            start_new_session=True,
+        )
+        print()
+        print("=" * 60)
+        print("  BACKGROUND TASK SPAWNED")
+        print("=" * 60)
+        print()
+        print(f"  🆔 Task ID:   #{task_id}")
+        print(f"  📋 Task:      {task_desc}")
+        print(f"  🤖 Agents:    {', '.join(agents)}")
+        print(f"  💻 PID:       {process.pid}")
+        print(f"  📁 Logs:      {tasks_dir / task_id}")
+        print(f"  🔔 Notify:    {notify}")
+        print()
+        print(f"  ─────────────────────────────────────────────")
+        print(f"  Usage:")
+        print(f"    orchestrator.py --status     Live dashboard")
+        print(f"    orchestrator.py --result {task_id}  View result")
+        print(f"    orchestrator.py --history   All tasks")
+        print(f"  ─────────────────────────────────────────────")
+        print()
+    except Exception as e:
+        print(f"❌ Failed to spawn background worker: {e}")
+        sys.exit(1)
+
+
+# ============================================================
 # Main
 # ============================================================
 
@@ -869,12 +940,81 @@ def main():
         action="store_true",
         help="Allow --yolo on spawned agents (auto-approve all tool calls)"
     )
+    # ── Background + TUI flags ──────────────────────────────────
+    parser.add_argument(
+        "--background", "-b",
+        action="store_true",
+        help="Run task in background (async)"
+    )
+    parser.add_argument(
+        "--notify",
+        type=str,
+        default=None,
+        metavar="CHANNEL",
+        help="Notification channel on completion: terminal, hermes, slack (default: hermes when --background)"
+    )
+    parser.add_argument(
+        "--status", "-s",
+        action="store_true",
+        help="Show live task dashboard"
+    )
+    parser.add_argument(
+        "--result", "-r",
+        type=str,
+        default=None,
+        metavar="ID",
+        help="Show detail for a specific task"
+    )
+    parser.add_argument(
+        "--history", "-H",
+        action="store_true",
+        help="Show all task history"
+    )
+    parser.add_argument(
+        "--cancel",
+        type=str,
+        default=None,
+        metavar="ID",
+        help="Cancel a running task"
+    )
+    parser.add_argument(
+        "--cleanup",
+        type=int,
+        nargs="?",
+        const=7,
+        default=None,
+        metavar="DAYS",
+        help="Remove tasks older than N days (default: 7)"
+    )
     args = parser.parse_args()
 
     # Parse force-agents if provided
     _force_agents = None
     if args.force_agents:
         _force_agents = [a.strip() for a in args.force_agents.split(",")]
+
+    # ── TUI / Management commands ──────────────────────────────────
+    # Import TUI module
+    _tui_path = Path(__file__).parent / "tui.py"
+    _tui_spec = importlib.util.spec_from_file_location("tui", str(_tui_path))
+    _tui_mod = importlib.util.module_from_spec(_tui_spec)
+    _tui_spec.loader.exec_module(_tui_mod)
+
+    if args.status:
+        _tui_mod.dashboard()
+        return
+    if args.result:
+        _tui_mod.task_detail(args.result)
+        return
+    if args.history:
+        _tui_mod.history()
+        return
+    if args.cancel:
+        _tui_mod.cancel_task(args.cancel)
+        return
+    if args.cleanup:
+        _tui_mod.cleanup(args.cleanup)
+        return
 
     # ================================================================
     # PHASE 0: Load existing plan (if --plan provided)
@@ -965,6 +1105,20 @@ def main():
 
         # --- Execute from plan ---
         yolo_flag = args.yes
+
+        if args.background:
+            # Spawn background worker
+            _spawn_background_worker(
+                task_id=_tui_mod.get_next_id(),
+                task_desc=task,
+                agents=agents,
+                mode="sequential" if args.sequential else "parallel",
+                max_parallel=args.max_parallel,
+                yolo=yolo_flag,
+                notify=args.notify or "hermes",
+            )
+            return
+
         if args.sequential:
             results = run_agents_sequential(
                 agents, task, analysis, yolo=yolo_flag
@@ -1051,6 +1205,19 @@ def main():
     # PHASE 5: Execute
     # ================================================================
     yolo_flag = args.yes
+
+    if args.background:
+        _spawn_background_worker(
+            task_id=_tui_mod.get_next_id(),
+            task_desc=task,
+            agents=analysis.agents,
+            mode="sequential" if args.sequential else "parallel",
+            max_parallel=args.max_parallel,
+            yolo=yolo_flag,
+            notify=args.notify or "hermes",
+        )
+        return
+
     if args.sequential:
         results = run_agents_sequential(
             analysis.agents, task, analysis, yolo=yolo_flag
